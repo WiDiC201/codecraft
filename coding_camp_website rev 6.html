@@ -1,1398 +1,1321 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CodeCraft Camp - Learn to Code</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --burnt-sienna: #E97451;
-            --cream: #FFFDD0;
-            --charcoal: #36454F;
-            --dark: #1a1a1a;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: var(--cream);
-            color: var(--charcoal);
-            overflow-x: hidden;
-        }
-
-        /* Navigation */
-        nav {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            background: var(--charcoal);
-            padding: 1rem 2rem;
-            z-index: 1000;
-            box-shadow: 0 2px 20px rgba(0,0,0,0.3);
-        }
-
-        nav ul {
-            list-style: none;
-            display: flex;
-            justify-content: center;
-            gap: 3rem;
-            align-items: center;
-        }
-
-        nav a {
-            color: var(--cream);
-            text-decoration: none;
-            font-size: 1.1rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        nav a::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 0;
-            width: 0;
-            height: 3px;
-            background: var(--burnt-sienna);
-            transition: width 0.3s ease;
-        }
-
-        nav a:hover::after {
-            width: 100%;
-        }
-
-        nav a:hover {
-            color: var(--burnt-sienna);
-        }
-
-        /* Secret Admin Login - Hidden in Footer */
-        .secret-login-trigger {
-            position: fixed;
-            bottom: 5px;
-            left: 5px;
-            width: 30px;
-            height: 30px;
-            background: transparent;
-            cursor: pointer;
-            z-index: 999;
-            opacity: 0;
-        }
-        
-        .secret-login-trigger:hover {
-            opacity: 0.1;
-            background: var(--burnt-sienna);
-        }
-
-        .admin-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.8);
-            z-index: 10000;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .admin-modal.show {
-            display: flex;
-        }
-
-        .admin-login-box {
-            background: white;
-            padding: 3rem;
-            border-radius: 20px;
-            max-width: 400px;
-            width: 90%;
-        }
-
-        .admin-login-box h2 {
-            color: var(--burnt-sienna);
-            margin-bottom: 2rem;
-            text-align: center;
-        }
-
-        /* Page Container */
-        .page {
-            display: none;
-            min-height: 100vh;
-            padding-top: 80px;
-            animation: fadeIn 0.5s ease;
-        }
-
-        .page.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Hero Section */
-        .hero {
-            height: 90vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, var(--charcoal) 0%, var(--dark) 100%);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            width: 500px;
-            height: 500px;
-            background: var(--burnt-sienna);
-            border-radius: 50%;
-            top: -250px;
-            right: -250px;
-            opacity: 0.1;
-        }
-
-        .hero-content {
-            text-align: center;
-            color: var(--cream);
-            z-index: 1;
-            animation: slideUp 1s ease;
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(50px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .hero h1 {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-            background: linear-gradient(to right, var(--cream), var(--burnt-sienna));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .hero p {
-            font-size: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .cta-button {
-            background: var(--burnt-sienna);
-            color: var(--cream);
-            padding: 1rem 3rem;
-            border: none;
-            border-radius: 50px;
-            font-size: 1.2rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
-            font-weight: 600;
-        }
-
-        .cta-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(233, 116, 81, 0.4);
-        }
-
-        /* Courses Section */
-        .courses {
-            padding: 5rem 2rem;
-            background: var(--cream);
-        }
-
-        .section-title {
-            text-align: center;
-            font-size: 3rem;
-            color: var(--charcoal);
-            margin-bottom: 3rem;
-            position: relative;
-        }
-
-        .section-title::after {
-            content: '';
-            display: block;
-            width: 100px;
-            height: 4px;
-            background: var(--burnt-sienna);
-            margin: 1rem auto;
-        }
-
-        .course-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .course-card {
-            background: white;
-            padding: 2rem;
-            border-radius: 20px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-            border: 3px solid transparent;
-        }
-
-        .course-card:hover {
-            transform: translateY(-10px);
-            border-color: var(--burnt-sienna);
-            box-shadow: 0 15px 40px rgba(233, 116, 81, 0.2);
-        }
-
-        .course-card h3 {
-            color: var(--burnt-sienna);
-            font-size: 1.8rem;
-            margin-bottom: 1rem;
-        }
-
-        .course-card p {
-            color: var(--charcoal);
-            line-height: 1.6;
-        }
-
-        /* Reviews Section */
-        .reviews-container {
-            max-width: 1200px;
-            margin: 3rem auto;
-            padding: 2rem;
-        }
-
-        .review-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 2rem;
-            margin-bottom: 3rem;
-        }
-
-        .review-card {
-            background: white;
-            padding: 2rem;
-            border-radius: 20px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-            position: relative;
-            transition: transform 0.3s ease;
-        }
-
-        .review-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .review-card.featured {
-            border: 3px solid var(--burnt-sienna);
-        }
-
-        .review-stars {
-            color: #FFD700;
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .review-text {
-            color: var(--charcoal);
-            line-height: 1.6;
-            margin-bottom: 1rem;
-            font-style: italic;
-        }
-
-        .review-author {
-            color: var(--burnt-sienna);
-            font-weight: 600;
-            margin-bottom: 0.3rem;
-        }
-
-        .review-course {
-            color: #666;
-            font-size: 0.9rem;
-        }
-
-        .review-date {
-            color: #999;
-            font-size: 0.85rem;
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-        }
-
-        /* Form Styles */
-        .form-container {
-            max-width: 600px;
-            margin: 5rem auto;
-            padding: 3rem;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: var(--charcoal);
-            font-weight: 600;
-        }
-
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 0.8rem;
-            border: 2px solid #ddd;
-            border-radius: 10px;
-            font-size: 1rem;
-            transition: border-color 0.3s ease;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: var(--burnt-sienna);
-        }
-
-        .form-group textarea {
-            resize: vertical;
-            min-height: 120px;
-        }
-
-        /* About Section */
-        .about-content {
-            max-width: 1000px;
-            margin: 3rem auto;
-            padding: 2rem;
-        }
-
-        .instructor-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 3rem;
-            margin-top: 3rem;
-        }
-
-        .instructor-card {
-            background: white;
-            padding: 2rem;
-            border-radius: 20px;
-            text-align: center;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease;
-        }
-
-        .instructor-card:hover {
-            transform: scale(1.05);
-        }
-
-        .instructor-avatar {
-            width: 150px;
-            height: 150px;
-            background: linear-gradient(135deg, var(--burnt-sienna), var(--charcoal));
-            border-radius: 50%;
-            margin: 0 auto 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 4rem;
-            color: var(--cream);
-        }
-
-        .instructor-card h3 {
-            color: var(--burnt-sienna);
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .instructor-card p {
-            color: var(--charcoal);
-            line-height: 1.6;
-        }
-
-        /* Success Message */
-        .success-message {
-            display: none;
-            background: #4CAF50;
-            color: white;
-            padding: 1rem;
-            border-radius: 10px;
-            margin-bottom: 1rem;
-            text-align: center;
-        }
-
-        .success-message.show {
-            display: block;
-            animation: slideDown 0.5s ease;
-        }
-
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Admin Dashboard */
-        .admin-dashboard {
-            max-width: 1400px;
-            margin: 3rem auto;
-            padding: 2rem;
-        }
-
-        .admin-tabs {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-
-        .admin-tab {
-            padding: 1rem 2rem;
-            background: white;
-            border: 2px solid var(--burnt-sienna);
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .admin-tab.active {
-            background: var(--burnt-sienna);
-            color: white;
-        }
-
-        .admin-content {
-            display: none;
-        }
-
-        .admin-content.active {
-            display: block;
-        }
-
-        .data-table {
-            width: 100%;
-            background: white;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-        }
-
-        .data-table th,
-        .data-table td {
-            padding: 1rem;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .data-table th {
-            background: var(--charcoal);
-            color: var(--cream);
-        }
-
-        .data-table tr:hover {
-            background: #f5f5f5;
-        }
-
-        .admin-btn {
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-right: 0.5rem;
-            transition: all 0.3s ease;
-        }
-
-        .approve-btn {
-            background: #4CAF50;
-            color: white;
-        }
-
-        .delete-btn {
-            background: #f44336;
-            color: white;
-        }
-
-        .admin-btn:hover {
-            transform: scale(1.05);
-        }
-
-        .stat-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        .stat-card {
-            background: white;
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-
-        .stat-number {
-            font-size: 3rem;
-            color: var(--burnt-sienna);
-            font-weight: bold;
-        }
-
-        .stat-label {
-            color: var(--charcoal);
-            font-size: 1.1rem;
-        }
-
-        /* Footer */
-        footer {
-            background: var(--charcoal);
-            color: var(--cream);
-            text-align: center;
-            padding: 2rem;
-            margin-top: 5rem;
-        }
-
-        @media (max-width: 768px) {
-            .hero h1 { font-size: 2.5rem; }
-            .hero p { font-size: 1.2rem; }
-            nav ul { gap: 1rem; }
-            nav a { font-size: 0.9rem; }
-            .review-grid { grid-template-columns: 1fr; }
-            .admin-tabs { flex-direction: column; }
-        }
-    </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CodeCraft — Summer Coding Camp 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0a0a0f; --surface: #13131a; --surface2: #1c1c27;
+    --border: rgba(255,255,255,0.08); --text: #f0f0f8; --muted: #8888aa;
+    --accent: #7c6fff; --accent2: #4ade80; --accent3: #f472b6;
+    --mono: 'Space Mono', monospace; --sans: 'Outfit', sans-serif;
+  }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: var(--sans); font-size: 16px; line-height: 1.6; min-height: 100vh; overflow-x: hidden; }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+  ::selection { background: var(--accent); color: #fff; }
+  button { cursor: pointer; border: none; outline: none; font-family: var(--sans); }
+  input, textarea, select { font-family: var(--sans); }
+  a { text-decoration: none; color: inherit; }
+
+  @keyframes fadeIn { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.5;} }
+  .fade-in { animation: fadeIn 0.45s ease forwards; }
+  .pulse { animation: pulse 2s infinite; }
+
+  nav {
+    position: fixed; top:0; left:0; right:0; z-index:100;
+    background: rgba(10,10,15,0.88); backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    height: 64px; display:flex; align-items:center; padding:0 32px; gap:28px;
+  }
+  .nav-logo { font-family:var(--mono); font-size:1.15rem; font-weight:700; color:var(--accent); margin-right:auto; cursor:pointer; display:flex; align-items:center; gap:8px; }
+  .nav-logo span { color:var(--text); }
+  .nav-link { font-size:0.88rem; font-weight:500; color:var(--muted); cursor:pointer; padding:4px 0; border-bottom:2px solid transparent; transition:color 0.2s, border-color 0.2s; }
+  .nav-link:hover, .nav-link.active { color:var(--text); border-bottom-color:var(--accent); }
+  .nav-cart { position:relative; background:var(--accent); color:#fff; font-size:0.85rem; font-weight:600; padding:8px 18px; border-radius:8px; transition:opacity 0.2s; }
+  .nav-cart:hover { opacity:0.85; }
+  .cart-badge { position:absolute; top:-6px; right:-6px; background:var(--accent3); color:#fff; font-size:0.7rem; font-weight:700; width:18px; height:18px; border-radius:50%; display:flex; align-items:center; justify-content:center; }
+
+  .page { padding-top:64px; min-height:100vh; display:none; }
+  .page.active { display:block; }
+
+  .hero { position:relative; min-height:calc(100vh - 64px); display:flex; align-items:center; justify-content:center; flex-direction:column; text-align:center; padding:80px 32px; overflow:hidden; }
+  .hero-bg { position:absolute; inset:0; background:radial-gradient(ellipse 80% 60% at 50% 30%,rgba(124,111,255,0.18) 0%,transparent 70%), radial-gradient(ellipse 50% 40% at 80% 70%,rgba(244,114,182,0.12) 0%,transparent 60%), radial-gradient(ellipse 40% 40% at 20% 80%,rgba(74,222,128,0.08) 0%,transparent 60%); }
+  .hero-grid { position:absolute; inset:0; background-image:linear-gradient(rgba(255,255,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.03) 1px,transparent 1px); background-size:60px 60px; mask-image:radial-gradient(ellipse at center,black 30%,transparent 80%); }
+  .hero-tag { font-family:var(--mono); font-size:0.75rem; color:var(--accent2); letter-spacing:3px; text-transform:uppercase; margin-bottom:20px; background:rgba(74,222,128,0.1); border:1px solid rgba(74,222,128,0.3); padding:6px 16px; border-radius:100px; position:relative; display:inline-block; }
+  .hero h1 { font-size:clamp(3rem,8vw,6rem); font-weight:900; line-height:1.05; letter-spacing:-2px; position:relative; margin-bottom:24px; }
+  .hero h1 em { font-style:normal; background:linear-gradient(135deg,var(--accent) 0%,var(--accent3) 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+  .hero p { font-size:1.15rem; color:var(--muted); max-width:540px; margin-bottom:40px; position:relative; }
+  .hero-ctas { display:flex; gap:16px; flex-wrap:wrap; justify-content:center; position:relative; }
+
+  .btn-primary { background:var(--accent); color:#fff; font-size:1rem; font-weight:700; padding:14px 32px; border-radius:10px; transition:transform 0.2s,box-shadow 0.2s; box-shadow:0 4px 24px rgba(124,111,255,0.4); }
+  .btn-primary:hover { transform:translateY(-2px); box-shadow:0 8px 32px rgba(124,111,255,0.5); }
+  .btn-secondary { background:transparent; color:var(--text); font-size:0.95rem; font-weight:600; padding:14px 32px; border-radius:10px; border:1px solid var(--border); transition:border-color 0.2s,background 0.2s; }
+  .btn-secondary:hover { border-color:var(--accent); background:rgba(124,111,255,0.1); }
+  .btn-submit { background:var(--accent); color:#fff; font-weight:700; font-size:1rem; padding:13px 28px; border-radius:10px; transition:opacity 0.2s; }
+  .btn-submit:hover { opacity:0.85; }
+  .btn-submit:disabled { opacity:0.5; cursor:not-allowed; }
+  .btn-remove { background:rgba(244,114,182,0.1); border:1px solid rgba(244,114,182,0.3); color:var(--accent3); font-size:0.8rem; padding:5px 12px; border-radius:6px; font-weight:600; transition:background 0.2s; }
+  .btn-remove:hover { background:rgba(244,114,182,0.2); }
+  .btn-approve { background:rgba(74,222,128,0.15); border:1px solid rgba(74,222,128,0.4); color:var(--accent2); font-size:0.8rem; padding:5px 12px; border-radius:6px; font-weight:600; transition:background 0.2s; margin-right:6px; }
+  .btn-approve:hover { background:rgba(74,222,128,0.28); }
+  .btn-danger { background:rgba(248,113,113,0.15); border:1px solid rgba(248,113,113,0.4); color:#f87171; font-size:0.8rem; padding:5px 12px; border-radius:6px; font-weight:600; transition:background 0.2s; }
+  .btn-danger:hover { background:rgba(248,113,113,0.28); }
+
+  .section { padding:80px 32px; max-width:1100px; margin:0 auto; }
+  .section-title { font-size:clamp(1.8rem,4vw,2.8rem); font-weight:800; letter-spacing:-1px; margin-bottom:8px; }
+  .section-sub { color:var(--muted); margin-bottom:48px; font-size:1.05rem; }
+
+  .features-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:20px; }
+  .feature-card { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:28px; }
+  .feature-icon { font-size:2rem; margin-bottom:12px; }
+  .feature-title { font-weight:700; font-size:1.05rem; margin-bottom:8px; }
+  .feature-desc { color:var(--muted); font-size:0.9rem; line-height:1.6; }
+
+  .cta-band { background:var(--surface); border-top:1px solid var(--border); border-bottom:1px solid var(--border); padding:60px 32px; text-align:center; }
+  .cta-band-inner { max-width:600px; margin:0 auto; }
+  .cta-label { font-family:var(--mono); font-size:0.75rem; color:var(--accent2); letter-spacing:2px; margin-bottom:16px; }
+  .cta-title { font-size:2.2rem; font-weight:900; letter-spacing:-1px; margin-bottom:16px; }
+  .cta-sub { color:var(--muted); margin-bottom:28px; }
+
+  .courses-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:24px; }
+  .course-card { background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:32px; cursor:pointer; transition:transform 0.25s,border-color 0.25s,box-shadow 0.25s; position:relative; overflow:hidden; }
+  .course-card:hover { transform:translateY(-4px); box-shadow:0 16px 48px rgba(0,0,0,0.4); }
+  .course-card-bar { position:absolute; top:0; left:0; right:0; height:3px; border-radius:20px 20px 0 0; }
+  .course-icon { font-size:3rem; margin-bottom:16px; display:block; }
+  .course-title { font-size:1.5rem; font-weight:800; margin-bottom:8px; }
+  .course-subtitle { color:var(--muted); font-size:0.95rem; margin-bottom:20px; }
+  .course-meta { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:20px; }
+  .meta-tag { font-family:var(--mono); font-size:0.7rem; padding:4px 10px; border-radius:6px; background:rgba(255,255,255,0.06); border:1px solid var(--border); color:var(--muted); }
+  .course-price { font-family:var(--mono); font-size:1.1rem; font-weight:700; margin-bottom:20px; }
+  .btn-course { width:100%; padding:12px; border-radius:10px; font-size:0.95rem; font-weight:700; transition:opacity 0.2s; color:#fff; margin-bottom:10px; }
+  .btn-course:hover { opacity:0.85; }
+  .btn-add-cart { width:100%; padding:10px; border-radius:10px; font-size:0.9rem; font-weight:700; background:transparent; border:1px solid var(--border); color:var(--text); transition:border-color 0.2s,background 0.2s; }
+  .btn-add-cart:hover { border-color:var(--accent); background:rgba(124,111,255,0.1); }
+  .btn-add-cart.in-cart { border-color:var(--accent2); color:var(--accent2); }
+
+  .course-detail-hero { padding:60px 32px; max-width:900px; margin:0 auto; }
+  .back-link { font-family:var(--mono); font-size:0.8rem; color:var(--muted); cursor:pointer; margin-bottom:32px; display:inline-flex; align-items:center; gap:8px; transition:color 0.2s; }
+  .back-link:hover { color:var(--text); }
+  .course-detail-title { font-size:clamp(2rem,5vw,3.5rem); font-weight:900; letter-spacing:-2px; margin-bottom:16px; }
+  .info-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:32px 0; }
+  .info-block { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:20px 24px; }
+  .info-block label { font-size:0.75rem; color:var(--muted); font-family:var(--mono); text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:4px; }
+  .info-block strong { font-size:1.05rem; font-weight:700; }
+  .info-full { grid-column:1 / -1; }
+  .topics-list { list-style:none; padding:8px 24px; }
+  .topics-list li { padding:14px 0; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:12px; font-weight:500; }
+  .topics-list li:last-child { border-bottom:none; }
+  .topic-num { font-family:var(--mono); font-size:0.75rem; color:var(--muted); min-width:54px; }
+  .outcomes-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:20px 0; }
+  .outcome-item { background:var(--surface2); border-radius:10px; padding:14px 16px; font-size:0.9rem; display:flex; gap:10px; align-items:flex-start; }
+  .outcome-check { color:var(--accent2); font-size:1.1rem; flex-shrink:0; }
+  .detail-actions { margin-top:40px; display:flex; gap:16px; flex-wrap:wrap; }
+
+  .reviews-layout { display:grid; grid-template-columns:1fr 1.4fr; gap:48px; align-items:start; }
+  .review-form-box { background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:32px; }
+  .review-form-title { font-weight:800; font-size:1.2rem; margin-bottom:20px; }
+  .reviews-list { display:flex; flex-direction:column; gap:16px; }
+  .review-card { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:24px; animation:fadeIn 0.4s ease forwards; }
+  .review-stars { color:#fbbf24; font-size:1.1rem; margin-bottom:10px; letter-spacing:2px; }
+  .review-text { color:var(--muted); font-size:0.95rem; line-height:1.6; margin-bottom:16px; }
+  .review-author { font-weight:700; font-size:0.9rem; }
+  .review-course-label { font-size:0.8rem; color:var(--muted); font-family:var(--mono); }
+  .stars-input { display:flex; gap:6px; margin-bottom:16px; cursor:pointer; font-size:1.5rem; }
+  .stars-input span { transition:color 0.1s; }
+  .success-msg { background:rgba(74,222,128,0.1); border:1px solid rgba(74,222,128,0.3); border-radius:10px; padding:12px 16px; margin-bottom:16px; color:var(--accent2); font-size:0.9rem; display:none; }
+  .pending-msg { background:rgba(251,191,36,0.1); border:1px solid rgba(251,191,36,0.3); border-radius:10px; padding:12px 16px; margin-bottom:16px; color:#fbbf24; font-size:0.9rem; display:none; }
+
+  label { display:block; font-size:0.85rem; color:var(--muted); margin-bottom:6px; font-weight:500; }
+  input, textarea, select { width:100%; background:var(--surface2); border:1px solid var(--border); border-radius:10px; color:var(--text); padding:12px 16px; font-size:0.95rem; margin-bottom:16px; transition:border-color 0.2s; }
+  input:focus, textarea:focus, select:focus { outline:none; border-color:var(--accent); }
+  textarea { min-height:120px; resize:vertical; }
+  select option { background:var(--surface2); }
+
+  .about-bio { background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:40px; margin-bottom:48px; line-height:1.8; color:var(--muted); font-size:1.02rem; max-width:700px; }
+  .about-bio p { margin-bottom:16px; }
+  .about-bio p:last-child { margin-bottom:0; }
+  .team-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:24px; margin-top:24px; }
+  .team-card { background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:36px 32px; text-align:center; }
+  .team-avatar { width:80px; height:80px; border-radius:50%; background:linear-gradient(135deg,var(--accent),var(--accent3)); margin:0 auto 20px; display:flex; align-items:center; justify-content:center; font-size:1.6rem; font-weight:900; color:#fff; }
+  .team-name { font-size:1.3rem; font-weight:800; margin-bottom:4px; }
+  .team-role { color:var(--accent); font-family:var(--mono); font-size:0.8rem; margin-bottom:12px; }
+  .team-bio { color:var(--muted); font-size:0.92rem; line-height:1.6; }
+  .stats-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:20px; text-align:center; }
+  .stat-block { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:28px; }
+  .stat-value { font-size:2.5rem; font-weight:900; font-family:var(--mono); color:var(--accent); }
+  .stat-label { color:var(--muted); font-size:0.85rem; margin-top:4px; }
+  .divider { border:none; border-top:1px solid var(--border); margin:40px 0; }
+
+  .contact-grid { display:grid; grid-template-columns:1fr 1fr; gap:48px; align-items:start; }
+  .contact-info h3 { font-size:1.4rem; font-weight:800; margin-bottom:12px; }
+  .contact-info p { color:var(--muted); line-height:1.7; margin-bottom:24px; }
+  .contact-item { display:flex; gap:14px; align-items:center; margin-bottom:16px; }
+  .contact-icon { font-size:1.3rem; }
+  .contact-label-text { font-size:0.75rem; color:var(--muted); font-family:var(--mono); }
+  .contact-value { font-weight:600; font-size:0.95rem; }
+  .contact-form-box { background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:32px; }
+  .sent-box { text-align:center; padding:40px 20px; display:none; }
+  .sent-icon { font-size:3rem; margin-bottom:16px; }
+  .contact-form-inner { display:block; }
+
+  .cart-notice { background:rgba(124,111,255,0.1); border:1px solid rgba(124,111,255,0.3); border-radius:12px; padding:16px 20px; font-size:0.9rem; color:var(--muted); margin-bottom:24px; }
+  .cart-notice strong { color:var(--text); }
+  .cart-table { width:100%; border-collapse:collapse; margin-bottom:32px; }
+  .cart-table th { text-align:left; font-family:var(--mono); font-size:0.75rem; color:var(--muted); padding:12px 0; border-bottom:1px solid var(--border); text-transform:uppercase; letter-spacing:1px; }
+  .cart-table td { padding:20px 0; border-bottom:1px solid var(--border); vertical-align:top; }
+  .cart-course-name { font-weight:700; font-size:1.05rem; margin-bottom:4px; }
+  .cart-course-meta { font-size:0.85rem; color:var(--muted); }
+  .cart-price { font-family:var(--mono); font-weight:700; }
+  .cart-price-sub { font-size:0.75rem; color:var(--muted); }
+  .cart-total-row { display:flex; justify-content:space-between; align-items:center; background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:20px 24px; margin-bottom:24px; }
+  .cart-total-label { font-size:1rem; color:var(--muted); }
+  .cart-total-value { font-size:1.5rem; font-weight:900; font-family:var(--mono); }
+  .refund-notice { background:rgba(248,113,113,0.08); border:1px solid rgba(248,113,113,0.25); border-radius:12px; padding:14px 20px; margin-bottom:24px; font-size:0.88rem; color:#fca5a5; }
+  .empty-state { text-align:center; padding:60px 32px; color:var(--muted); }
+  .empty-icon { font-size:3rem; margin-bottom:16px; }
+  .empty-title { font-size:1.3rem; font-weight:700; color:var(--text); margin-bottom:8px; }
+
+  /* STUDENT COUNT SELECTOR */
+  .student-count-box { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:24px 28px; margin-bottom:24px; display:flex; align-items:center; gap:20px; flex-wrap:wrap; }
+  .student-count-label { font-weight:700; font-size:1rem; flex:1; }
+  .student-count-label span { display:block; font-size:0.82rem; color:var(--muted); font-weight:400; margin-top:2px; }
+  .count-controls { display:flex; align-items:center; gap:12px; }
+  .count-btn { width:36px; height:36px; border-radius:8px; background:var(--surface2); border:1px solid var(--border); color:var(--text); font-size:1.2rem; font-weight:700; display:flex; align-items:center; justify-content:center; transition:border-color 0.2s; }
+  .count-btn:hover { border-color:var(--accent); }
+  .count-display { font-family:var(--mono); font-size:1.3rem; font-weight:700; min-width:32px; text-align:center; }
+
+  /* CHECKOUT */
+  .checkout-layout { display:grid; grid-template-columns:1.2fr 1fr; gap:40px; align-items:start; }
+  .checkout-box { background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:36px; }
+  .checkout-box-title { font-weight:700; font-size:1.1rem; margin-bottom:20px; }
+  .checkout-summary { background:var(--surface2); border-radius:12px; padding:20px 24px; margin-bottom:24px; }
+  .checkout-row { display:flex; justify-content:space-between; padding:8px 0; font-size:0.92rem; }
+  .checkout-row.total { border-top:1px solid var(--border); margin-top:8px; padding-top:16px; font-size:1.1rem; font-weight:800; }
+  .checkout-note { font-size:0.82rem; color:var(--muted); margin-bottom:16px; line-height:1.6; }
+  .paypal-btn { width:100%; background:#0070ba; color:#fff; font-size:1rem; font-weight:700; padding:16px; border-radius:10px; margin-top:16px; display:flex; align-items:center; justify-content:center; gap:10px; transition:background 0.2s; border:none; cursor:pointer; }
+  .paypal-btn:hover { background:#005ea6; }
+  .paypal-logo { font-family:var(--mono); font-size:1.1rem; font-weight:900; color:#009cde; background:#fff; padding:2px 8px; border-radius:4px; }
+  .paypal-sub { font-size:0.75rem; color:var(--muted); text-align:center; margin-top:12px; }
+  .success-box { text-align:center; padding:60px 32px; background:var(--surface); border:1px solid rgba(74,222,128,0.3); border-radius:20px; max-width:500px; margin:0 auto; }
+  .success-icon { font-size:4rem; margin-bottom:20px; }
+  .success-box h2 { font-size:2rem; font-weight:900; margin-bottom:12px; }
+  .success-box p { color:var(--muted); margin-bottom:16px; }
+
+  /* STUDENT BLOCKS IN CHECKOUT */
+  .student-block { background:var(--surface2); border:1px solid var(--border); border-radius:14px; padding:20px 24px; margin-bottom:16px; }
+  .student-block-title { font-weight:700; font-size:0.95rem; margin-bottom:16px; color:var(--accent); font-family:var(--mono); }
+  .student-block input, .student-block select { margin-bottom:12px; }
+
+  /* ADMIN */
+  .admin-trigger { position:fixed; bottom:16px; left:16px; width:28px; height:28px; background:rgba(255,255,255,0.03); border-radius:6px; cursor:pointer; z-index:200; border:1px solid rgba(255,255,255,0.05); transition:background 0.2s; }
+  .admin-trigger:hover { background:rgba(255,255,255,0.08); }
+  .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.7); backdrop-filter:blur(8px); z-index:300; display:none; align-items:center; justify-content:center; padding:24px; }
+  .modal-overlay.open { display:flex; }
+  .admin-modal { background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:40px; width:100%; max-width:420px; }
+  .admin-modal h2 { font-size:1.6rem; font-weight:800; margin-bottom:6px; }
+  .admin-modal > p { color:var(--muted); font-size:0.9rem; margin-bottom:28px; }
+  .admin-modal-btns { display:flex; gap:12px; margin-top:8px; }
+  .admin-error { background:rgba(248,113,113,0.1); border:1px solid rgba(248,113,113,0.3); border-radius:8px; padding:10px 16px; color:#f87171; margin-bottom:16px; font-size:0.88rem; display:none; }
+  .admin-panel-modal { background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:40px; width:100%; max-width:900px; max-height:92vh; overflow-y:auto; }
+  .admin-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:28px; }
+  .admin-header h2 { font-size:1.8rem; font-weight:900; }
+  .admin-email-label { color:var(--muted); font-size:0.85rem; margin-top:2px; }
+  .admin-header-btns { display:flex; gap:12px; }
+  .admin-stats { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:28px; }
+  .admin-stat { background:var(--surface2); border:1px solid var(--border); border-radius:14px; padding:20px; text-align:center; }
+  .admin-stat-value { font-size:1.8rem; font-weight:900; font-family:var(--mono); color:var(--accent); }
+  .admin-stat-label { font-size:0.75rem; color:var(--muted); margin-top:4px; }
+  .admin-tabs { display:flex; gap:4px; margin-bottom:24px; background:var(--surface2); border-radius:10px; padding:4px; }
+  .admin-tab { flex:1; padding:10px; border-radius:8px; font-size:0.85rem; font-weight:600; color:var(--muted); transition:background 0.2s,color 0.2s; text-align:center; cursor:pointer; }
+  .admin-tab.active { background:var(--accent); color:#fff; }
+  .admin-tab-content { display:none; }
+  .admin-tab-content.active { display:block; }
+  .admin-section-title { font-weight:700; font-size:1rem; margin-bottom:14px; display:flex; justify-content:space-between; align-items:center; }
+  .admin-review-card { background:var(--surface2); border:1px solid var(--border); border-radius:12px; padding:18px 20px; margin-bottom:10px; }
+  .admin-review-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
+  .admin-review-text { color:var(--muted); font-size:0.88rem; margin-bottom:6px; }
+  .admin-review-course { font-family:var(--mono); font-size:0.75rem; color:var(--accent); margin-bottom:10px; }
+  .admin-review-actions { display:flex; gap:6px; }
+  .no-reviews-msg { color:var(--muted); font-size:0.9rem; padding:16px 0; }
+  .pending-badge { background:rgba(251,191,36,0.15); border:1px solid rgba(251,191,36,0.4); color:#fbbf24; font-size:0.7rem; padding:2px 8px; border-radius:100px; font-family:var(--mono); margin-left:8px; }
+  .approved-badge { background:rgba(74,222,128,0.12); border:1px solid rgba(74,222,128,0.35); color:var(--accent2); font-size:0.7rem; padding:2px 8px; border-radius:100px; font-family:var(--mono); margin-left:8px; }
+
+  /* ADD REVIEW FORM IN ADMIN */
+  .admin-add-review { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:24px; margin-bottom:20px; }
+  .admin-add-review h4 { font-size:1rem; font-weight:700; margin-bottom:16px; }
+  .admin-add-review input, .admin-add-review select, .admin-add-review textarea { margin-bottom:10px; }
+  .admin-add-review textarea { min-height:80px; }
+  .admin-stars-row { display:flex; gap:6px; font-size:1.4rem; cursor:pointer; margin-bottom:12px; }
+
+  /* PAGE VISITS */
+  .visit-table { width:100%; border-collapse:collapse; }
+  .visit-table th { text-align:left; font-family:var(--mono); font-size:0.72rem; color:var(--muted); padding:10px 0; border-bottom:1px solid var(--border); text-transform:uppercase; letter-spacing:1px; }
+  .visit-table td { padding:12px 0; border-bottom:1px solid var(--border); font-size:0.9rem; }
+  .visit-bar-wrap { background:var(--surface2); border-radius:4px; height:8px; width:140px; overflow:hidden; display:inline-block; vertical-align:middle; margin-left:12px; }
+  .visit-bar { background:var(--accent); height:100%; border-radius:4px; }
+
+  footer { background:var(--surface); border-top:1px solid var(--border); padding:40px 32px; text-align:center; }
+  footer .footer-logo { font-family:var(--mono); font-weight:700; color:var(--accent); font-size:1.1rem; margin-bottom:12px; }
+  footer p { color:var(--muted); font-size:0.85rem; }
+
+  @media (max-width:768px) {
+    nav { padding:0 16px; gap:12px; }
+    .nav-link { display:none; }
+    .section { padding:60px 20px; }
+    .hero { padding:60px 20px; }
+    .info-grid { grid-template-columns:1fr; }
+    .outcomes-grid { grid-template-columns:1fr; }
+    .reviews-layout { grid-template-columns:1fr; }
+    .contact-grid { grid-template-columns:1fr; }
+    .checkout-layout { grid-template-columns:1fr; }
+    .admin-stats { grid-template-columns:1fr 1fr; }
+    .admin-tabs { flex-wrap:wrap; }
+  }
+  @media (max-width:600px) {
+    .info-grid { grid-template-columns:1fr; }
+    .info-full { grid-column:auto; }
+    .admin-stats { grid-template-columns:1fr 1fr; }
+  }
+</style>
 </head>
 <body>
-    <!-- Secret Admin Login Trigger (bottom right corner - tiny invisible spot) -->
-    <div class="secret-login-trigger" onclick="showAdminLogin()"></div>
 
-    <!-- Admin Login Modal -->
-    <div id="adminModal" class="admin-modal">
-        <div class="admin-login-box">
-            <h2>Admin Access</h2>
-            <form id="adminLoginForm">
-                <div class="form-group">
-                    <label for="adminUser">Username</label>
-                    <input type="text" id="adminUser" required>
-                </div>
-                <div class="form-group">
-                    <label for="adminPass">Password</label>
-                    <input type="password" id="adminPass" required>
-                </div>
-                <button type="submit" class="cta-button" style="width: 100%;">Login</button>
-                <button type="button" class="cta-button" style="width: 100%; margin-top: 1rem; background: #666;" onclick="closeAdminLogin()">Cancel</button>
+<nav>
+  <div class="nav-logo" onclick="showPage('home')"><span></span> CodeCraft</div>
+  <span class="nav-link" onclick="showPage('home')" data-page="home">Home</span>
+  <span class="nav-link" onclick="showPage('courses')" data-page="courses">Courses</span>
+  <span class="nav-link" onclick="showPage('reviews')" data-page="reviews">Reviews</span>
+  <span class="nav-link" onclick="showPage('about')" data-page="about">About</span>
+  <span class="nav-link" onclick="showPage('contact')" data-page="contact">Contact</span>
+  <button class="nav-cart" onclick="showPage('cart')">🛒 Cart<span class="cart-badge" id="cart-badge" style="display:none">0</span></button>
+</nav>
+
+<!-- HOME -->
+<div id="page-home" class="page active">
+  <div class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-grid"></div>
+    <div class="hero-tag">☀️ Summer 2026 · Mid June</div>
+    <h1>Where Kids Learn to <em>Build</em></h1>
+    <p>Hands-on Python courses for grades 5–8. No boring slides — just real code, real projects, and real fun.</p>
+    <div class="hero-ctas">
+      <button class="btn-primary" onclick="showPage('courses')">Explore Courses</button>
+      <button class="btn-secondary" onclick="showPage('about')">Meet the Instructors</button>
+    </div>
+  </div>
+  <div class="section">
+    <div class="section-title">Why <span style="color:var(--accent)">CodeCraft?</span></div>
+    <div class="section-sub">We're students teaching students — and that makes all the difference.</div>
+    <div class="features-grid">
+      <div class="feature-card"><div class="feature-icon">🎯</div><div class="feature-title">Project-Based Learning</div><div class="feature-desc">Every course ends with a real project you built yourself — not just a certificate.</div></div>
+      <div class="feature-card"><div class="feature-icon">🤝</div><div class="feature-title">Small Class Sizes</div><div class="feature-desc">Personalized attention so no one gets left behind.</div></div>
+      <div class="feature-card"><div class="feature-icon">🚀</div><div class="feature-title">Real Python Skills</div><div class="feature-desc">Industry-standard Python — the same language used by professionals worldwide.</div></div>
+      <div class="feature-card"><div class="feature-icon">💰</div><div class="feature-title">Affordable</div><div class="feature-desc">Just $10/class, $60 per 2-week course. Quality education shouldn't cost a fortune.</div></div>
+    </div>
+  </div>
+  <div class="cta-band">
+    <div class="cta-band-inner">
+      <div class="cta-label">READY TO ENROLL?</div>
+      <div class="cta-title">Registration Open for Summer 2026</div>
+      <p class="cta-sub">Classes start mid-June. Space is limited — secure your spot today for just $60 per course.</p>
+      <button class="btn-primary" onclick="showPage('courses')">View Courses &amp; Enroll →</button>
+    </div>
+  </div>
+  <footer><div class="footer-logo">&lt;/&gt; CodeCraft</div><p>© 2026 CodeCraft · Created by Rithvik Chinthakuntla &amp; Aaron Sharma</p></footer>
+</div>
+
+<!-- COURSES -->
+<div id="page-courses" class="page">
+  <div class="section fade-in">
+    <div class="section-title">Our Courses</div>
+    <div class="section-sub">Two Python courses designed for middle-school students — whether you're brand new or ready to level up.</div>
+    <div class="courses-grid" id="courses-grid"></div>
+  </div>
+  <footer><div class="footer-logo">&lt;/&gt; CodeCraft</div><p>© 2026 CodeCraft · Created by Rithvik Chinthakuntla &amp; Aaron Sharma</p></footer>
+</div>
+
+<!-- COURSE DETAIL -->
+<div id="page-course-detail" class="page">
+  <div class="course-detail-hero fade-in" id="course-detail-content"></div>
+  <footer><div class="footer-logo">&lt;/&gt; CodeCraft</div><p>© 2026 CodeCraft · Created by Rithvik Chinthakuntla &amp; Aaron Sharma</p></footer>
+</div>
+
+<!-- REVIEWS -->
+<div id="page-reviews" class="page">
+  <div class="section fade-in">
+    <div class="section-title">Student Reviews</div>
+    <div class="section-sub">Hear from families who've been through our programs.</div>
+    <div class="reviews-layout">
+      <div class="review-form-box">
+        <div class="review-form-title">Leave a Review</div>
+        <div class="success-msg" id="review-success">✓ Review submitted! It will appear once approved by our team.</div>
+        <div class="pending-msg" id="review-pending">⏳ Your review is pending approval — thank you!</div>
+        <label>Your Name</label>
+        <input type="text" id="review-name" placeholder="Jane Doe" />
+        <label>Course</label>
+        <select id="review-course">
+          <option value="Intro To Python Fundamentals">Intro To Python Fundamentals</option>
+          <option value="Intro to Python with AI">Intro to Python with AI</option>
+        </select>
+        <label>Rating</label>
+        <div class="stars-input" id="stars-input">
+          <span data-val="1">★</span><span data-val="2">★</span><span data-val="3">★</span><span data-val="4">★</span><span data-val="5">★</span>
+        </div>
+        <label>Your Review</label>
+        <textarea id="review-text" placeholder="What did your child think of the course?"></textarea>
+        <button class="btn-submit" onclick="submitReview()">Submit Review</button>
+        <p style="color:var(--muted);font-size:0.78rem;margin-top:12px;">Reviews are approved by our team before appearing publicly.</p>
+      </div>
+      <div>
+        <div class="reviews-list" id="reviews-list">
+          <div style="color:var(--muted);padding:16px 0;">Loading reviews...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer><div class="footer-logo">&lt;/&gt; CodeCraft</div><p>© 2026 CodeCraft · Created by Rithvik Chinthakuntla &amp; Aaron Sharma</p></footer>
+</div>
+
+<!-- ABOUT -->
+<div id="page-about" class="page">
+  <div class="section fade-in">
+    <div class="section-title">About CodeCraft</div>
+    <div class="section-sub">A coding camp built by students, for students.</div>
+    <div class="about-bio">
+      <p>CodeCraft was born from a simple idea: the best people to teach kids to code are those who learned it recently themselves.</p>
+      <p>We designed every lesson from the perspective of a student — what's confusing, what clicks, and what actually makes coding fun. Our curriculum is project-first, meaning you build something real from day one.</p>
+      <p>Our mission is to make quality coding education accessible, affordable, and genuinely enjoyable for every middle schooler.</p>
+    </div>
+    <div style="font-weight:800;font-size:1.5rem;margin-bottom:24px;">Meet the Instructors</div>
+    <div class="team-grid">
+      <div class="team-card">
+        <div class="team-avatar">RC</div>
+        <div class="team-name">Rithvik Chinthakuntla</div>
+        <div class="team-role">Co-Founder &amp; Lead Instructor</div>
+        <div class="team-bio">Rithvik is passionate about the field of Technology, and is also very proficient in Engineering Principles. He enjoys a wide variety of activities such as Swimming, Robotics, Science Fair, TSA, helping out at Aidan's Heart Foundation, and many more.</div>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar">AS</div>
+        <div class="team-name">Aaron Sharma</div>
+        <div class="team-role">Co-Founder &amp; Lead Instructor</div>
+        <div class="team-bio">Aaron is a dedicated high school student passionate about Medicine and Technology, and looks to pursue the medical field one day. Aaron participates in a variety of activities such as EMS volunteering, FBLA, and plays sports like tennis and golf. </div>
+      </div>
+    </div>
+    <hr class="divider" />
+    <div class="stats-row">
+      <div class="stat-block"><div class="stat-value">2</div><div class="stat-label">Courses Offered</div></div>
+      <div class="stat-block"><div class="stat-value">6</div><div class="stat-label">Weeks Per Course</div></div>
+      <div class="stat-block"><div class="stat-value">$60</div><div class="stat-label">Per Course</div></div>
+      <div class="stat-block"><div class="stat-value">5–8</div><div class="stat-label">Grade Range</div></div>
+    </div>
+    <div style="margin-top:48px;text-align:center;">
+      <button class="btn-primary" onclick="showPage('courses')">Explore Our Courses →</button>
+    </div>
+  </div>
+  <footer><div class="footer-logo">&lt;/&gt; CodeCraft</div><p>© 2026 CodeCraft · Created by Rithvik Chinthakuntla &amp; Aaron Sharma</p></footer>
+</div>
+
+<!-- CONTACT -->
+<div id="page-contact" class="page">
+  <div class="section fade-in">
+    <div class="section-title">Get in Touch</div>
+    <div class="section-sub">Questions about enrollment, scheduling, or anything else? We'd love to hear from you.</div>
+    <div class="contact-grid">
+      <div class="contact-info">
+        <h3>We're here to help.</h3>
+        <p>Whether you're a parent with enrollment questions, a student curious about what to expect, or just want to learn more about CodeCraft — reach out anytime.</p>
+        <div class="contact-item"><span class="contact-icon">📧</span><div><div class="contact-label-text">Email</div><div class="contact-value">hello@codecraft.camp</div></div></div>
+        <div class="contact-item"><span class="contact-icon">📍</span><div><div class="contact-label-text">Location</div><div class="contact-value">In Person</div></div></div>
+        <div class="contact-item"><span class="contact-icon">📅</span><div><div class="contact-label-text">Sessions Start</div><div class="contact-value">Mid June 2026</div></div></div>
+        <div class="contact-item"><span class="contact-icon">🕐</span><div><div class="contact-label-text">Response Time</div><div class="contact-value">Within 24 hours</div></div></div>
+      </div>
+      <div>
+        <div class="contact-form-box">
+          <div id="contact-sent" class="sent-box">
+            <div class="sent-icon">✉️</div>
+            <div style="font-weight:800;font-size:1.2rem;margin-bottom:8px;">Message Sent!</div>
+            <div style="color:var(--muted);">We'll get back to you within 24 hours.</div>
+          </div>
+          <div id="contact-form-inner" class="contact-form-inner">
+            <div style="font-weight:800;font-size:1.2rem;margin-bottom:20px;">Send a Message</div>
+            <form id="contact-web3-form" action="https://api.web3forms.com/submit" method="POST" onsubmit="handleContactSubmit(event)">
+              <input type="hidden" name="access_key" value="231dd7c8-0eea-4d1a-a55c-50cbcc9dc8f8" />
+              <input type="hidden" name="subject" value="CodeCraft — New Contact Message" />
+              <label>Your Name</label>
+              <input type="text" name="name" id="contact-name" placeholder="Jane Doe" required />
+              <label>Email Address</label>
+              <input type="email" name="email" id="contact-email" placeholder="jane@example.com" required />
+              <label>Message</label>
+              <textarea name="message" id="contact-msg" placeholder="Hi, I have a question about..." required></textarea>
+              <button type="submit" class="btn-submit" id="contact-submit-btn">Send Message</button>
             </form>
+          </div>
         </div>
+      </div>
     </div>
+  </div>
+  <footer><div class="footer-logo">&lt;/&gt; CodeCraft</div><p>© 2026 CodeCraft · Created by Rithvik Chinthakuntla &amp; Aaron Sharma</p></footer>
+</div>
 
-    <!-- Navigation -->
-    <nav>
-        <ul>
-            <li><a href="#" onclick="showPage('home')">Home</a></li>
-            <li><a href="#" onclick="showPage('courses')">Courses</a></li>
-            <li><a href="#" onclick="showPage('reviews')">Reviews</a></li>
-            <li><a href="#" onclick="showPage('signup')">Sign Up</a></li>
-            <li><a href="#" onclick="showPage('contact')">Contact</a></li>
-            <li><a href="#" onclick="showPage('about')">About Us</a></li>
-            <li id="adminNavLink" style="display: none;"><a href="#" onclick="showPage('admin')">Admin</a></li>
-        </ul>
-    </nav>
+<!-- CART -->
+<div id="page-cart" class="page">
+  <div class="section fade-in">
+    <div class="section-title">Your Cart</div>
+    <div class="section-sub">Review your courses before enrolling.</div>
+    <div id="cart-content"></div>
+  </div>
+  <footer><div class="footer-logo">&lt;/&gt; CodeCraft</div><p>© 2026 CodeCraft · Created by Rithvik Chinthakuntla &amp; Aaron Sharma</p></footer>
+</div>
 
-    <!-- Home Page -->
-    <div id="home" class="page active">
-        <div class="hero">
-            <div class="hero-content">
-                <h1>CodeCraft Camp</h1>
-                <p>Unlock Your Coding Potential This Summer</p>
-                <a href="#" onclick="showPage('signup')" class="cta-button">Join Us Today</a>
-            </div>
-        </div>
-        
-        <div class="courses">
-            <h2 class="section-title">Featured Programs</h2>
-            <div class="course-grid">
-                <div class="course-card">
-                    <h3>🐍 Python Fundamentals</h3>
-                    <p>Master the basics of Python programming, from variables to functions, and build real-world projects.</p>
-                </div>
-                <div class="course-card">
-                    <h3>🌐 Web Development</h3>
-                    <p>Learn HTML, CSS, and JavaScript to create stunning, interactive websites from scratch.</p>
-                </div>
-                <div class="course-card">
-                    <h3>🤖 AI & Machine Learning</h3>
-                    <p>Dive into the exciting world of artificial intelligence and build your first ML models.</p>
-                </div>
-            </div>
-        </div>
+<!-- CHECKOUT -->
+<div id="page-checkout" class="page">
+  <div class="section fade-in">
+    <span class="back-link" onclick="showPage('cart')">← Back to Cart</span>
+    <div class="section-title">Checkout</div>
+    <div class="section-sub">Complete your enrollment for Summer 2026.</div>
+    <div id="checkout-content"></div>
+  </div>
+  <footer><div class="footer-logo">&lt;/&gt; CodeCraft</div><p>© 2026 CodeCraft · Created by Rithvik Chinthakuntla &amp; Aaron Sharma</p></footer>
+</div>
+
+<!-- SECRET ADMIN TRIGGER -->
+<div class="admin-trigger" id="admin-trigger" title=""></div>
+
+<!-- Admin Login Modal -->
+<div class="modal-overlay" id="admin-modal-overlay" onclick="closeAdminModal(event)">
+  <div class="admin-modal" onclick="event.stopPropagation()">
+    <h2>🔒 Admin Access</h2>
+    <p>Enter your Firebase credentials to access the admin panel.</p>
+    <div class="admin-error" id="admin-error"></div>
+    <label>Email</label>
+    <input type="email" id="admin-email" placeholder="admin@codecraft.camp" />
+    <label>Password</label>
+    <input type="password" id="admin-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')adminLogin()" />
+    <div class="admin-modal-btns">
+      <button class="btn-submit" style="flex:1" onclick="adminLogin()" id="admin-login-btn">Sign In</button>
+      <button class="btn-secondary" style="padding:13px 20px" onclick="document.getElementById('admin-modal-overlay').classList.remove('open')">Cancel</button>
     </div>
+  </div>
+</div>
 
-    <!-- Courses Page -->
-    <div id="courses" class="page">
-        <div class="courses">
-            <h2 class="section-title">All Courses</h2>
-            <div class="course-grid">
-                <div class="course-card">
-                    <h3>🐍 Python Fundamentals</h3>
-                    <p>Perfect for beginners! Learn variables, loops, functions, and object-oriented programming. Build games, calculators, and automation scripts.</p>
-                </div>
-                <div class="course-card">
-                    <h3>🌐 Web Development</h3>
-                    <p>Create beautiful websites with HTML, CSS, and JavaScript. Learn responsive design, animations, and modern web frameworks.</p>
-                </div>
-                <div class="course-card">
-                    <h3>🤖 AI & Machine Learning</h3>
-                    <p>Explore neural networks, data science, and AI algorithms. Build intelligent applications that learn and adapt.</p>
-                </div>
-                <div class="course-card">
-                    <h3>📱 Mobile App Development</h3>
-                    <p>Design and develop mobile apps for iOS and Android. Learn React Native and publish your own app.</p>
-                </div>
-                <div class="course-card">
-                    <h3>🎮 Game Development</h3>
-                    <p>Create your own video games using Python Pygame and Unity. Learn game physics, graphics, and design principles.</p>
-                </div>
-                <div class="course-card">
-                    <h3>💾 Data Structures & Algorithms</h3>
-                    <p>Master computer science fundamentals. Learn sorting, searching, trees, graphs, and prepare for coding interviews.</p>
-                </div>
-            </div>
-        </div>
+<!-- Admin Panel Modal -->
+<div class="modal-overlay" id="admin-panel-overlay" onclick="closeAdminPanel(event)">
+  <div class="admin-panel-modal" onclick="event.stopPropagation()">
+    <div class="admin-header">
+      <div>
+        <h2>Admin Panel</h2>
+        <div class="admin-email-label" id="admin-user-email"></div>
+      </div>
+      <div class="admin-header-btns">
+        <button class="btn-secondary" style="padding:8px 16px;font-size:0.85rem" onclick="adminRefresh()">↻ Refresh</button>
+        <button class="btn-remove" onclick="adminLogout()">Sign Out</button>
+      </div>
     </div>
-
-    <!-- Reviews Page -->
-    <div id="reviews" class="page">
-        <div class="reviews-container">
-            <h2 class="section-title">Student Testimonials</h2>
-            <div id="reviewsGrid" class="review-grid">
-                <!-- Reviews will be loaded here -->
-            </div>
-
-            <h2 class="section-title" style="margin-top: 4rem;">Share Your Experience</h2>
-            <div class="form-container">
-                <div id="reviewSuccess" class="success-message">
-                    Thank you for your review! It will appear after admin approval.
-                </div>
-                <form id="reviewForm">
-                    <div class="form-group">
-                        <label for="reviewName">Your Name *</label>
-                        <input type="text" id="reviewName" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="reviewCourse">Course Taken *</label>
-                        <select id="reviewCourse" required>
-                            <option value="">Select a course...</option>
-                            <option value="Python Fundamentals">Python Fundamentals</option>
-                            <option value="Web Development">Web Development</option>
-                            <option value="AI & Machine Learning">AI & Machine Learning</option>
-                            <option value="Mobile App Development">Mobile App Development</option>
-                            <option value="Game Development">Game Development</option>
-                            <option value="Data Structures & Algorithms">Data Structures & Algorithms</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="reviewRating">Rating *</label>
-                        <select id="reviewRating" required>
-                            <option value="5">⭐⭐⭐⭐⭐ (5 stars)</option>
-                            <option value="4">⭐⭐⭐⭐ (4 stars)</option>
-                            <option value="3">⭐⭐⭐ (3 stars)</option>
-                            <option value="2">⭐⭐ (2 stars)</option>
-                            <option value="1">⭐ (1 star)</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="reviewText">Your Review *</label>
-                        <textarea id="reviewText" required placeholder="Tell us about your experience..."></textarea>
-                    </div>
-                    <button type="submit" class="cta-button" style="width: 100%;">Submit Review</button>
-                </form>
-            </div>
-        </div>
+    <div class="admin-stats">
+      <div class="admin-stat"><div class="admin-stat-value" id="stat-approved">0</div><div class="admin-stat-label">Approved Reviews</div></div>
+      <div class="admin-stat"><div class="admin-stat-value" id="stat-pending">0</div><div class="admin-stat-label">Pending Reviews</div></div>
+      <div class="admin-stat"><div class="admin-stat-value" id="stat-avg">—</div><div class="admin-stat-label">Avg Rating</div></div>
+      <div class="admin-stat"><div class="admin-stat-value" id="stat-visits">—</div><div class="admin-stat-label">Total Page Views</div></div>
     </div>
-
-    <!-- Sign Up Page -->
-    <div id="signup" class="page">
-        <div class="form-container">
-            <h2 class="section-title">Express Your Interest</h2>
-            <div id="signupSuccess" class="success-message">
-                Thank you for your interest! We'll be in touch soon.
-            </div>
-            <form id="signupForm">
-                <div class="form-group">
-                    <label for="name">Full Name *</label>
-                    <input type="text" id="name" name="name" required>
-                </div>
-                <div class="form-group">
-                    <label for="email">Email Address *</label>
-                    <input type="email" id="email" name="email" required>
-                </div>
-                <div class="form-group">
-                    <label for="phone">Phone Number</label>
-                    <input type="tel" id="phone" name="phone">
-                </div>
-                <div class="form-group">
-                    <label for="age">Age *</label>
-                    <input type="number" id="age" name="age" required>
-                </div>
-                <div class="form-group">
-                    <label for="course">Course Interest *</label>
-                    <select id="course" name="course" required>
-                        <option value="">Select a course...</option>
-                        <option value="Python Fundamentals">Python Fundamentals</option>
-                        <option value="Web Development">Web Development</option>
-                        <option value="AI & Machine Learning">AI & Machine Learning</option>
-                        <option value="Mobile App Development">Mobile App Development</option>
-                        <option value="Game Development">Game Development</option>
-                        <option value="Data Structures & Algorithms">Data Structures & Algorithms</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="experience">Coding Experience</label>
-                    <select id="experience" name="experience">
-                        <option value="None">No experience</option>
-                        <option value="Beginner">Beginner</option>
-                        <option value="Intermediate">Intermediate</option>
-                        <option value="Advanced">Advanced</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="message">Additional Information</label>
-                    <textarea id="message" name="message" placeholder="Tell us about your goals and what you hope to learn..."></textarea>
-                </div>
-                <button type="submit" class="cta-button" style="width: 100%;">Submit Interest</button>
-            </form>
-        </div>
+    <div class="admin-tabs">
+      <div class="admin-tab active" onclick="switchAdminTab('pending')">⏳ Pending Reviews</div>
+      <div class="admin-tab" onclick="switchAdminTab('approved')">✅ Approved Reviews</div>
+      <div class="admin-tab" onclick="switchAdminTab('add')">➕ Add Review</div>
+      <div class="admin-tab" onclick="switchAdminTab('visits')">📊 Page Visits</div>
     </div>
-
-    <!-- Contact Page -->
-    <div id="contact" class="page">
-        <div class="form-container">
-            <h2 class="section-title">Get in Touch</h2>
-            <div id="contactSuccess" class="success-message">
-                Message sent successfully! We'll respond within 24 hours.
-            </div>
-            <form id="contactForm">
-                <div class="form-group">
-                    <label for="contactName">Your Name *</label>
-                    <input type="text" id="contactName" name="contactName" required>
-                </div>
-                <div class="form-group">
-                    <label for="contactEmail">Email Address *</label>
-                    <input type="email" id="contactEmail" name="contactEmail" required>
-                </div>
-                <div class="form-group">
-                    <label for="subject">Subject *</label>
-                    <input type="text" id="subject" name="subject" required>
-                </div>
-                <div class="form-group">
-                    <label for="contactMessage">Message *</label>
-                    <textarea id="contactMessage" name="contactMessage" required></textarea>
-                </div>
-                <button type="submit" class="cta-button" style="width: 100%;">Send Message</button>
-            </form>
-        </div>
+    <div id="admin-tab-pending" class="admin-tab-content active">
+      <div class="admin-section-title">Pending Approval</div>
+      <div id="admin-pending-list"><div class="no-reviews-msg">Loading...</div></div>
     </div>
-
-    <!-- About Us Page -->
-    <div id="about" class="page">
-        <div class="about-content">
-            <h2 class="section-title">About CodeCraft Camp</h2>
-            <p style="text-align: center; font-size: 1.2rem; line-height: 1.8; margin-bottom: 2rem;">
-                CodeCraft Camp is a student-led initiative designed to inspire the next generation of programmers. 
-                We believe coding should be accessible, fun, and empowering for everyone. Our hands-on approach 
-                combines real-world projects with fundamental computer science principles.
-            </p>
-            
-            <h2 class="section-title" style="margin-top: 4rem;">Meet Your Instructors</h2>
-            <div class="instructor-grid">
-                <div class="instructor-card">
-                    <div class="instructor-avatar">A</div>
-                    <h3>Aaron</h3>
-                    <p>Passionate about web development and AI, Aaron has won multiple hackathons and built several apps used by his school community. He loves teaching and making coding fun and accessible.</p>
-                </div>
-                <div class="instructor-card">
-                    <div class="instructor-avatar">R</div>
-                    <h3>Rithvik</h3>
-                    <p>A competitive programmer and game development enthusiast, Rithvik has participated in national coding competitions. He specializes in algorithms and creating engaging learning experiences.</p>
-                </div>
-            </div>
-        </div>
+    <div id="admin-tab-approved" class="admin-tab-content">
+      <div class="admin-section-title">Approved Reviews (Live on Site)</div>
+      <div id="admin-approved-list"><div class="no-reviews-msg">Loading...</div></div>
     </div>
-
-    <!-- Admin Dashboard -->
-    <div id="admin" class="page">
-        <div class="admin-dashboard">
-            <h2 class="section-title">Admin Dashboard</h2>
-            <button onclick="logout()" class="cta-button" style="margin-bottom: 2rem;">Logout</button>
-
-            <div class="stat-grid">
-                <div class="stat-card">
-                    <div class="stat-number" id="statSignups">0</div>
-                    <div class="stat-label">Total Sign-ups</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="statContacts">0</div>
-                    <div class="stat-label">Contact Messages</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="statReviews">0</div>
-                    <div class="stat-label">Pending Reviews</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="statVisits">0</div>
-                    <div class="stat-label">Page Visits</div>
-                </div>
-            </div>
-
-            <div class="admin-tabs">
-                <div class="admin-tab active" onclick="showAdminTab('signups')">Sign-ups</div>
-                <div class="admin-tab" onclick="showAdminTab('contacts')">Contact Messages</div>
-                <div class="admin-tab" onclick="showAdminTab('reviewsAdmin')">Reviews</div>
-                <div class="admin-tab" onclick="showAdminTab('addReview')">Add Testimonial</div>
-            </div>
-
-            <div id="signups" class="admin-content active">
-                <h3 style="margin-bottom: 1rem;">Student Interest Forms</h3>
-                <div style="overflow-x: auto;">
-                    <table class="data-table" id="signupsTable">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Phone</th>
-                                <th>Age</th>
-                                <th>Course</th>
-                                <th>Experience</th>
-                                <th>Message</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="signupsTableBody">
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div id="contacts" class="admin-content">
-                <h3 style="margin-bottom: 1rem;">Contact Form Submissions</h3>
-                <div style="overflow-x: auto;">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Subject</th>
-                                <th>Message</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="contactsTableBody">
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div id="reviewsAdmin" class="admin-content">
-                <h3 style="margin-bottom: 1rem;">Review Management</h3>
-                <div style="overflow-x: auto;">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Name</th>
-                                <th>Course</th>
-                                <th>Rating</th>
-                                <th>Review</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="reviewsTableBody">
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div id="addReview" class="admin-content">
-                <h3 style="margin-bottom: 1rem;">Add Featured Testimonial</h3>
-                <div class="form-container">
-                    <form id="adminReviewForm">
-                        <div class="form-group">
-                            <label for="adminReviewName">Student Name *</label>
-                            <input type="text" id="adminReviewName" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="adminReviewCourse">Course *</label>
-                            <select id="adminReviewCourse" required>
-                                <option value="">Select a course...</option>
-                                <option value="Python Fundamentals">Python Fundamentals</option>
-                                <option value="Web Development">Web Development</option>
-                                <option value="AI & Machine Learning">AI & Machine Learning</option>
-                                <option value="Mobile App Development">Mobile App Development</option>
-                                <option value="Game Development">Game Development</option>
-                                <option value="Data Structures & Algorithms">Data Structures & Algorithms</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="adminReviewRating">Rating *</label>
-                            <select id="adminReviewRating" required>
-                                <option value="5">⭐⭐⭐⭐⭐ (5 stars)</option>
-                                <option value="4">⭐⭐⭐⭐ (4 stars)</option>
-                                <option value="3">⭐⭐⭐ (3 stars)</option>
-                                <option value="2">⭐⭐ (2 stars)</option>
-                                <option value="1">⭐ (1 star)</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="adminReviewText">Testimonial *</label>
-                            <textarea id="adminReviewText" required></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label>
-                                <input type="checkbox" id="adminReviewFeatured">
-                                Mark as Featured (highlighted with orange border)
-                            </label>
-                        </div>
-                        <button type="submit" class="cta-button" style="width: 100%;">Add Testimonial</button>
-                    </form>
-                </div>
-            </div>
+    <div id="admin-tab-add" class="admin-tab-content">
+      <div class="admin-add-review">
+        <h4>Manually Add a Review</h4>
+        <label>Name</label>
+        <input type="text" id="ar-name" placeholder="Parent / Student name" />
+        <label>Course</label>
+        <select id="ar-course">
+          <option value="Intro To Python Fundamentals">Intro To Python Fundamentals</option>
+          <option value="Intro to Python with AI">Intro to Python with AI</option>
+        </select>
+        <label>Stars</label>
+        <div class="admin-stars-row" id="ar-stars">
+          <span data-val="1">★</span><span data-val="2">★</span><span data-val="3">★</span><span data-val="4">★</span><span data-val="5">★</span>
         </div>
+        <label>Review Text</label>
+        <textarea id="ar-text" placeholder="Write the review here..."></textarea>
+        <button class="btn-submit" onclick="adminAddReview()">Add Review (Auto-Approved)</button>
+      </div>
     </div>
+    <div id="admin-tab-visits" class="admin-tab-content">
+      <div class="admin-section-title">Page Visit Tracker</div>
+      <div id="admin-visits-table"><div class="no-reviews-msg">Loading...</div></div>
+    </div>
+  </div>
+</div>
 
-    <footer>
-        <p>&copy; 2025 CodeCraft Camp. Empowering young minds through code.</p>
-    </footer>
+<script type="module">
+// ============================================================
+// CONFIG
+// ============================================================
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyBCG7kOqveFdyP-kk4_lFPNqjm6ZsxlPRs",
+  authDomain: "codecraft-bc764.firebaseapp.com",
+  projectId: "codecraft-bc764",
+  storageBucket: "codecraft-bc764.firebasestorage.app",
+  messagingSenderId: "927331339615",
+  appId: "1:927331339615:web:c7764f4918d723f1237aea"
+};
+const PAYPAL_EMAIL = "YOUR_PAYPAL_EMAIL@gmail.com";
+const WEB3FORMS_KEY = "231dd7c8-0eea-4d1a-a55c-50cbcc9dc8f8";
 
-    <script>
-        // Admin credentials
-        const ADMIN_USERNAME = 'codecraft_admin';
-        const ADMIN_PASSWORD = 'Aaron&Rithvik2025!';
+// ============================================================
+// COURSES
+// ============================================================
+const COURSES = [
+  {
+    id: "python-fundamentals",
+    title: "Intro To Python Fundamentals",
+    subtitle: "Build Your First Apps and Games with Python",
+    icon: "🐍",
+    color: "#4ade80",
+    grades: "Grades 5–7",
+    prereqs: "None Required",
+    duration: "2 Weeks",
+    price: 60,
+    priceLabel: "$10/class · $60 total",
+    startDate: "Late July, going into August, 2026",
+    schedule: "Class time determined based on availability, will add to WhatsApp Group Chat to decide timings.",
+    description: "Master the Fundamentals of Programming by writing code culminating in an interactive group built video game project at the end of every other class.",
+    topics: [
+      "Core Fundamentals: Variables, Loops, and User Inputs",
+      "Conditional Pathways, Lists, and Project Builds"
+    ],
+    outcomes: [
+      "Write and run Python programs",
+      "Understand core programming logic",
+      "Debug and problem-solve independently",
+      "Complete a full mini-project"
+    ]
+  },
+  {
+    id: "python-game-making",
+    title: "Intro to Python with AI",
+    subtitle: "Discover the Logic behind Smart Tech and Chatbots",
+    icon: "📊",
+    color: "#f472b6",
+    grades: "Grades 6–8",
+    prereqs: "Basic Python proficiency",
+    duration: "2 Weeks",
+    price: 60,
+    priceLabel: "$10/class · $60 total",
+    startDate: "Late July to August 2026",
+    schedule: "Class time determined based on availability, will add to WhatsApp Group Chat to decide timings.",
+    description: "Learn how AI works by coding your own text scanners, automated game players, and intelligent chatbots using middle school friendly Python logic.",
+    topics: [
+      "Logic Trees, Decision Rules, and Sentiment Scanners",
+      "Data Extraction, Decision Scoring, and Integration"
+    ],
+    outcomes: [
+      "Think like an AI Engineer",
+      "Develop Smart Programs",
+      "Build Custom Chatbots",
+      "Design Decision Scoring Models"
+    ]
+  }
+];
 
-        // Data storage
-        let signupsData = [];
-        let contactsData = [];
-        let reviewsData = [];
-        let pageVisits = {};
-        let isAdminLoggedIn = false;
+// ============================================================
+// STATE
+// ============================================================
+let cart = [];
+let studentCount = 1;
+let currentCourse = null;
+let selectedStars = 5;
+let adminSelectedStars = 5;
+let firebaseApp = null, authInst = null, dbInst = null;
+let adminUser = null;
+let adminClickCount = 0, adminClickTimer = null;
+let allReviews = [];
+let reviewsLoaded = false;
 
-        // Initialize data from storage
-        function initData() {
-            const stored = {
-                signups: localStorage.getItem('cc_signups'),
-                contacts: localStorage.getItem('cc_contacts'),
-                reviews: localStorage.getItem('cc_reviews'),
-                visits: localStorage.getItem('cc_visits')
-            };
+// PAGE VISIT TRACKING (localStorage)
+const PAGE_KEYS = ['home','courses','reviews','about','contact','cart','checkout'];
+function trackVisit(page) {
+  const key = 'cc_visits_' + page;
+  const cur = parseInt(localStorage.getItem(key) || '0');
+  localStorage.setItem(key, cur + 1);
+}
+function getVisits() {
+  return PAGE_KEYS.map(p => ({ page: p, count: parseInt(localStorage.getItem('cc_visits_' + p) || '0') }));
+}
 
-            signupsData = stored.signups ? JSON.parse(stored.signups) : [];
-            contactsData = stored.contacts ? JSON.parse(stored.contacts) : [];
-            reviewsData = stored.reviews ? JSON.parse(stored.reviews) : [
-                {
-                    id: 1,
-                    name: 'Sarah Johnson',
-                    course: 'Web Development',
-                    rating: 5,
-                    text: 'Amazing experience! Aaron and Rithvik made learning web development so fun and easy to understand. I built my first website in just 2 weeks!',
-                    date: new Date('2024-12-15').toLocaleDateString(),
-                    approved: true,
-                    featured: true
-                },
-                {
-                    id: 2,
-                    name: 'Michael Chen',
-                    course: 'Python Fundamentals',
-                    rating: 5,
-                    text: 'Best coding camp ever! The instructors are super knowledgeable and patient. I went from zero coding knowledge to building my own projects.',
-                    date: new Date('2024-12-20').toLocaleDateString(),
-                    approved: true,
-                    featured: false
-                },
-                {
-                    id: 3,
-                    name: 'Emma Rodriguez',
-                    course: 'AI & Machine Learning',
-                    rating: 5,
-                    text: 'The AI course blew my mind! I never thought I could understand machine learning, but the way they teach makes it so accessible. Highly recommend!',
-                    date: new Date('2025-01-05').toLocaleDateString(),
-                    approved: true,
-                    featured: true
-                }
-            ];
-            pageVisits = stored.visits ? JSON.parse(stored.visits) : {};
+// ============================================================
+// FIREBASE
+// ============================================================
+async function getFirebase() {
+  if (firebaseApp) return { auth: authInst, db: dbInst };
+  try {
+    const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
+    const { getAuth, signInWithEmailAndPassword, signOut } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js");
+    const { getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc, serverTimestamp, query, orderBy, where } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    firebaseApp = initializeApp(FIREBASE_CONFIG);
+    authInst = { inst: getAuth(firebaseApp), signInWithEmailAndPassword, signOut };
+    dbInst = { inst: getFirestore(firebaseApp), collection, addDoc, getDocs, updateDoc, deleteDoc, doc, serverTimestamp, query, orderBy, where };
+    return { auth: authInst, db: dbInst };
+  } catch(e) { console.error("Firebase init error:", e); return null; }
+}
 
-            loadReviews();
-        }
+// ============================================================
+// ROUTING
+// ============================================================
+window.showPage = function(name, course) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+  const el = document.getElementById('page-' + name);
+  if (el) { el.classList.add('active'); window.scrollTo(0,0); }
+  const nl = document.querySelector('[data-page="' + name + '"]');
+  if (nl) nl.classList.add('active');
+  trackVisit(name);
+  if (name === 'courses') renderCoursesGrid();
+  if (name === 'course-detail' && course) { currentCourse = course; renderCourseDetail(); }
+  if (name === 'reviews') initReviews();
+  if (name === 'cart') renderCart();
+  if (name === 'checkout') renderCheckout();
+};
 
-        // Save data to storage
-        function saveData() {
-            localStorage.setItem('cc_signups', JSON.stringify(signupsData));
-            localStorage.setItem('cc_contacts', JSON.stringify(contactsData));
-            localStorage.setItem('cc_reviews', JSON.stringify(reviewsData));
-            localStorage.setItem('cc_visits', JSON.stringify(pageVisits));
-        }
+// ============================================================
+// COURSES GRID
+// ============================================================
+function renderCoursesGrid() {
+  const grid = document.getElementById('courses-grid');
+  grid.innerHTML = COURSES.map(c => {
+    const inCart = cart.find(x => x.id === c.id);
+    return `
+    <div class="course-card" onclick="showPage('course-detail', COURSES.find(x=>x.id==='${c.id}'))">
+      <div class="course-card-bar" style="background:${c.color}"></div>
+      <span class="course-icon">${c.icon}</span>
+      <div class="course-title">${c.title}</div>
+      <div class="course-subtitle">${c.subtitle}</div>
+      <div class="course-meta">
+        <span class="meta-tag">${c.grades}</span>
+        <span class="meta-tag">${c.duration}</span>
+        <span class="meta-tag">Prereqs: ${c.prereqs}</span>
+      </div>
+      <div class="course-price" style="color:${c.color}">${c.priceLabel}</div>
+      <button class="btn-course" style="background:${c.color}" onclick="event.stopPropagation();showPage('course-detail',COURSES.find(x=>x.id==='${c.id}'))">View Course Details →</button>
+      <button class="btn-add-cart ${inCart?'in-cart':''}" id="cart-btn-${c.id}" onclick="event.stopPropagation();addToCart('${c.id}')">
+        ${inCart ? '✓ Added to Cart' : 'Add to Cart'}
+      </button>
+    </div>`;
+  }).join('');
+}
 
-        // Track page visits
-        function trackVisit(page) {
-            pageVisits[page] = (pageVisits[page] || 0) + 1;
-            saveData();
-            if (isAdminLoggedIn) {
-                updateStats();
-            }
-        }
+window.addToCart = function(id) {
+  const course = COURSES.find(c => c.id === id);
+  if (!course || cart.find(c => c.id === id)) return;
+  cart.push(course);
+  updateCartBadge();
+  const btn = document.getElementById('cart-btn-' + id);
+  if (btn) { btn.textContent = '✓ Added to Cart'; btn.classList.add('in-cart'); }
+  const detailBtn = document.getElementById('detail-cart-btn');
+  if (detailBtn && currentCourse && currentCourse.id === id) {
+    detailBtn.textContent = '✓ Added to Cart';
+    detailBtn.style.background = 'var(--accent2)';
+  }
+};
 
-        // Show admin login
-        function showAdminLogin() {
-            document.getElementById('adminModal').classList.add('show');
-        }
+function updateCartBadge() {
+  const badge = document.getElementById('cart-badge');
+  if (cart.length > 0) { badge.style.display = 'flex'; badge.textContent = cart.length; }
+  else badge.style.display = 'none';
+}
 
-        function closeAdminLogin() {
-            document.getElementById('adminModal').classList.remove('show');
-        }
+// ============================================================
+// COURSE DETAIL
+// ============================================================
+function renderCourseDetail() {
+  const c = currentCourse; if (!c) return;
+  const inCart = cart.find(x => x.id === c.id);
+  document.getElementById('course-detail-content').innerHTML = `
+    <span class="back-link" onclick="showPage('courses')">← Back to Courses</span>
+    <div style="font-size:4rem;margin-bottom:16px">${c.icon}</div>
+    <div style="font-family:var(--mono);font-size:0.75rem;color:${c.color};letter-spacing:2px;margin-bottom:12px;text-transform:uppercase">${c.grades} · ${c.duration}</div>
+    <div class="course-detail-title">${c.title}</div>
+    <p style="color:var(--muted);font-size:1.1rem;max-width:600px;line-height:1.7;margin-bottom:32px">${c.description}</p>
+    <div class="info-grid">
+      <div class="info-block"><label>Grade Level</label><strong>${c.grades}</strong></div>
+      <div class="info-block"><label>Prerequisites</label><strong>${c.prereqs}</strong></div>
+      <div class="info-block"><label>Duration</label><strong>${c.duration} · 3 classes/week</strong></div>
+      <div class="info-block"><label>Start Date</label><strong>${c.startDate}</strong></div>
+      <div class="info-block info-full"><label>Schedule</label><strong style="color:var(--muted)">${c.schedule}</strong></div>
+      <div class="info-block"><label>Price</label><strong style="color:${c.color};font-size:1.3rem">${c.priceLabel}</strong></div>
+      <div class="info-block" style="background:rgba(255,100,100,0.07);border-color:rgba(255,100,100,0.2)"><label>Refund Policy</label><strong style="color:#f87171;font-size:0.95rem">Non-refundable once enrolled</strong></div>
+    </div>
+    <hr class="divider" />
+    <div style="font-weight:800;font-size:1.3rem;margin-bottom:20px">Course Curriculum</div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:32px">
+      <ul class="topics-list">
+        ${c.topics.map((t,i)=>`<li><span class="topic-num">Week ${i+1}</span>${t}</li>`).join('')}
+      </ul>
+    </div>
+    <div style="font-weight:800;font-size:1.3rem;margin-bottom:16px">What You'll Learn</div>
+    <div class="outcomes-grid">
+      ${c.outcomes.map(o=>`<div class="outcome-item"><span class="outcome-check">✓</span>${o}</div>`).join('')}
+    </div>
+    <div class="detail-actions">
+      <button class="btn-primary" id="detail-cart-btn"
+        style="background:${inCart?'var(--accent2)':c.color};box-shadow:0 4px 24px ${c.color}44"
+        onclick="addToCart('${c.id}')">
+        ${inCart ? '✓ Added to Cart' : 'Enroll Now — $60'}
+      </button>
+      ${inCart ? `<button class="btn-secondary" onclick="showPage('cart')">View Cart →</button>` : ''}
+    </div>`;
+}
 
-        // Admin login handler
-        document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const username = document.getElementById('adminUser').value;
-            const password = document.getElementById('adminPass').value;
+// ============================================================
+// REVIEWS — pending approval flow
+// ============================================================
+async function initReviews() {
+  updateStarUI();
+  if (reviewsLoaded) { renderReviewsList(); return; }
+  const list = document.getElementById('reviews-list');
+  list.innerHTML = '<div style="color:var(--muted);padding:16px 0;">Loading reviews...</div>';
+  try {
+    const fb = await getFirebase();
+    if (!fb) throw new Error("Firebase unavailable");
+    const { db } = fb;
+    const q = db.query(db.collection(db.inst, "reviews"), db.where("approved","==",true), db.orderBy("createdAt","desc"));
+    const snap = await db.getDocs(q);
+    allReviews = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    reviewsLoaded = true;
+  } catch(e) {
+    console.error("Reviews load error:", e);
+    allReviews = [];
+    reviewsLoaded = true;
+  }
+  renderReviewsList();
+}
 
-            if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
-                isAdminLoggedIn = true;
-                document.getElementById('adminNavLink').style.display = 'block';
-                closeAdminLogin();
-                showPage('admin');
-                loadAdminData();
-            } else {
-                alert('Invalid credentials!');
-            }
-        });
+function renderReviewsList() {
+  const list = document.getElementById('reviews-list');
+  if (allReviews.length === 0) {
+    list.innerHTML = '<div style="color:var(--muted);padding:20px 0;font-size:0.95rem;">No approved reviews yet — be the first!</div>';
+    return;
+  }
+  list.innerHTML = allReviews.map(r => `
+    <div class="review-card">
+      <div class="review-stars">${'★'.repeat(r.stars||5)}${'☆'.repeat(5-(r.stars||5))}</div>
+      <div class="review-text">"${r.text}"</div>
+      <div class="review-author">${r.name}</div>
+      <div class="review-course-label">${r.course}</div>
+    </div>`).join('');
+}
 
-        function logout() {
-            isAdminLoggedIn = false;
-            document.getElementById('adminNavLink').style.display = 'none';
-            showPage('home');
-        }
+// Stars widget
+const starsEl = document.getElementById('stars-input');
+starsEl.querySelectorAll('span').forEach(s => {
+  s.addEventListener('click', () => { selectedStars = parseInt(s.dataset.val); updateStarUI(); });
+  s.addEventListener('mouseenter', () => hlStars(starsEl, parseInt(s.dataset.val)));
+  s.addEventListener('mouseleave', () => updateStarUI());
+});
+function hlStars(el, n) {
+  el.querySelectorAll('span').forEach(s => { s.style.color = parseInt(s.dataset.val) <= n ? '#fbbf24' : 'var(--muted)'; });
+}
+function updateStarUI() { hlStars(starsEl, selectedStars); }
+updateStarUI();
 
-        // Load reviews
-        function loadReviews() {
-            const grid = document.getElementById('reviewsGrid');
-            const approvedReviews = reviewsData.filter(r => r.approved);
-            
-            grid.innerHTML = approvedReviews.map(review => `
-                <div class="review-card ${review.featured ? 'featured' : ''}">
-                    <div class="review-date">${review.date}</div>
-                    <div class="review-stars">${'⭐'.repeat(review.rating)}</div>
-                    <div class="review-text">"${review.text}"</div>
-                    <div class="review-author">${review.name}</div>
-                    <div class="review-course">${review.course}</div>
-                </div>
-            `).join('');
-        }
+window.submitReview = async function() {
+  const name = document.getElementById('review-name').value.trim();
+  const text = document.getElementById('review-text').value.trim();
+  const course = document.getElementById('review-course').value;
+  if (!name || !text) return;
+  const btn = document.querySelector('#page-reviews .btn-submit');
+  btn.disabled = true; btn.textContent = 'Submitting...';
+  try {
+    const fb = await getFirebase();
+    if (!fb) throw new Error("Firebase unavailable");
+    const { db } = fb;
+    await db.addDoc(db.collection(db.inst, "reviews"), {
+      name, text, stars: selectedStars, course,
+      approved: false,
+      createdAt: db.serverTimestamp()
+    });
+    document.getElementById('review-name').value = '';
+    document.getElementById('review-text').value = '';
+    selectedStars = 5; updateStarUI();
+    document.getElementById('review-pending').style.display = 'block';
+    setTimeout(() => document.getElementById('review-pending').style.display = 'none', 5000);
+  } catch(e) {
+    alert("Error saving review. Please try again.");
+    console.error(e);
+  } finally {
+    btn.disabled = false; btn.textContent = 'Submit Review';
+  }
+};
 
-        // Load admin data
-        function loadAdminData() {
-            updateStats();
-            loadSignupsTable();
-            loadContactsTable();
-            loadReviewsTable();
-        }
+// ============================================================
+// CONTACT — Web3Forms
+// ============================================================
+window.handleContactSubmit = async function(e) {
+  e.preventDefault();
+  const btn = document.getElementById('contact-submit-btn');
+  btn.disabled = true; btn.textContent = 'Sending...';
+  try {
+    const form = document.getElementById('contact-web3-form');
+    const data = new FormData(form);
+    const res = await fetch('https://api.web3forms.com/submit', { method:'POST', body: data });
+    const json = await res.json();
+    if (json.success) {
+      document.getElementById('contact-form-inner').style.display = 'none';
+      document.getElementById('contact-sent').style.display = 'block';
+    } else {
+      alert('Something went wrong. Please try again.');
+      btn.disabled = false; btn.textContent = 'Send Message';
+    }
+  } catch {
+    alert('Network error. Please try again.');
+    btn.disabled = false; btn.textContent = 'Send Message';
+  }
+};
 
-        function updateStats() {
-            document.getElementById('statSignups').textContent = signupsData.length;
-            document.getElementById('statContacts').textContent = contactsData.length;
-            document.getElementById('statReviews').textContent = reviewsData.filter(r => !r.approved).length;
-            
-            const totalVisits = Object.values(pageVisits).reduce((a, b) => a + b, 0);
-            document.getElementById('statVisits').textContent = totalVisits;
-        }
+// ============================================================
+// CART — with student count selector
+// ============================================================
+window.removeFromCart = function(id) {
+  cart = cart.filter(c => c.id !== id);
+  updateCartBadge(); renderCart();
+};
 
-        function loadSignupsTable() {
-            const tbody = document.getElementById('signupsTableBody');
-            tbody.innerHTML = signupsData.map((signup, index) => `
-                <tr>
-                    <td>${signup.date}</td>
-                    <td>${signup.name}</td>
-                    <td>${signup.email}</td>
-                    <td>${signup.phone || 'N/A'}</td>
-                    <td>${signup.age}</td>
-                    <td>${signup.course}</td>
-                    <td>${signup.experience}</td>
-                    <td>${signup.message || 'N/A'}</td>
-                    <td>
-                        <button class="admin-btn delete-btn" onclick="deleteSignup(${index})">Delete</button>
-                    </td>
-                </tr>
-            `).join('');
-        }
+window.changeStudentCount = function(delta) {
+  studentCount = Math.max(1, Math.min(10, studentCount + delta));
+  document.getElementById('student-count-display').textContent = studentCount;
+};
 
-        function loadContactsTable() {
-            const tbody = document.getElementById('contactsTableBody');
-            tbody.innerHTML = contactsData.map((contact, index) => `
-                <tr>
-                    <td>${contact.date}</td>
-                    <td>${contact.name}</td>
-                    <td>${contact.email}</td>
-                    <td>${contact.subject}</td>
-                    <td>${contact.message}</td>
-                    <td>
-                        <button class="admin-btn delete-btn" onclick="deleteContact(${index})">Delete</button>
-                    </td>
-                </tr>
-            `).join('');
-        }
+function renderCart() {
+  const el = document.getElementById('cart-content');
+  if (cart.length === 0) {
+    el.innerHTML = `<div class="empty-state"><div class="empty-icon">🛒</div><div class="empty-title">Your cart is empty</div><p>Add a course to get started.</p><button class="btn-primary" style="margin-top:20px" onclick="showPage('courses')">Browse Courses</button></div>`;
+    return;
+  }
+  const total = cart.reduce((s,c) => s + c.price, 0) * studentCount;
+  el.innerHTML = `
+    <div class="student-count-box">
+      <div class="student-count-label">
+        How many students are enrolling?
+        <span>Each student is $60 per course. Price updates below.</span>
+      </div>
+      <div class="count-controls">
+        <button class="count-btn" onclick="changeStudentCount(-1)">−</button>
+        <span class="count-display" id="student-count-display">${studentCount}</span>
+        <button class="count-btn" onclick="changeStudentCount(1)">+</button>
+      </div>
+    </div>
+    <div class="cart-notice">
+      <strong>📅 Start Date:</strong> Late July / August 2026 &nbsp;·&nbsp;
+      <strong>Schedule:</strong> Class times determined by WhatsApp group after enrollment.
+    </div>
+    <table class="cart-table">
+      <thead><tr><th>Course</th><th>Duration</th><th>Students</th><th>Price</th><th></th></tr></thead>
+      <tbody>
+        ${cart.map(c=>`
+        <tr>
+          <td><div style="display:flex;align-items:center;gap:12px"><span style="font-size:1.8rem">${c.icon}</span><div><div class="cart-course-name">${c.title}</div><div class="cart-course-meta">${c.grades} · Prereqs: ${c.prereqs}</div></div></div></td>
+          <td><span style="color:var(--muted);font-size:0.9rem">${c.duration}</span></td>
+          <td><span style="color:var(--muted);font-size:0.9rem" id="cart-students-${c.id}">${studentCount}</span></td>
+          <td><div class="cart-price">$${c.price * studentCount}</div><div class="cart-price-sub">$${c.price} × ${studentCount}</div></td>
+          <td><button class="btn-remove" onclick="removeFromCart('${c.id}')">Remove</button></td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+    <div class="cart-total-row">
+      <span class="cart-total-label">Total (${cart.length} course${cart.length>1?'s':''} × ${studentCount} student${studentCount>1?'s':''})</span>
+      <span class="cart-total-value">$${total}</span>
+    </div>
+    <div class="refund-notice">⚠️ <strong>Non-Refundable:</strong> All enrollments are final and non-refundable once payment is submitted.</div>
+    <button class="btn-primary" style="font-size:1rem;padding:16px 36px" onclick="showPage('checkout')">Proceed to Checkout →</button>`;
+}
 
-        function loadReviewsTable() {
-            const tbody = document.getElementById('reviewsTableBody');
-            tbody.innerHTML = reviewsData.map((review, index) => `
-                <tr>
-                    <td>${review.date}</td>
-                    <td>${review.name}</td>
-                    <td>${review.course}</td>
-                    <td>${'⭐'.repeat(review.rating)}</td>
-                    <td>${review.text}</td>
-                    <td>${review.approved ? '✅ Approved' : '⏳ Pending'}</td>
-                    <td>
-                        ${!review.approved ? `<button class="admin-btn approve-btn" onclick="approveReview(${index})">Approve</button>` : ''}
-                        <button class="admin-btn delete-btn" onclick="deleteReview(${index})">Delete</button>
-                    </td>
-                </tr>
-            `).join('');
-        }
+// ============================================================
+// CHECKOUT — per-student details + Web3Forms email + PayPal
+// ============================================================
+function renderCheckout() {
+  const el = document.getElementById('checkout-content');
+  if (cart.length === 0) {
+    el.innerHTML = `<div class="empty-state"><div class="empty-icon">🛒</div><div class="empty-title">Nothing to check out</div><button class="btn-primary" style="margin-top:16px" onclick="showPage('courses')">Browse Courses</button></div>`;
+    return;
+  }
+  const total = cart.reduce((s,c) => s+c.price, 0) * studentCount;
+  const itemName = cart.map(c=>c.title).join(' + ');
 
-        function deleteSignup(index) {
-            if (confirm('Delete this signup?')) {
-                signupsData.splice(index, 1);
-                saveData();
-                loadAdminData();
-            }
-        }
+  let studentForms = '';
+  for (let i = 1; i <= studentCount; i++) {
+    studentForms += `
+      <div class="student-block">
+        <div class="student-block-title">STUDENT ${i}</div>
+        <label>Student's Full Name</label>
+        <input type="text" id="s${i}-name" placeholder="Alex Johnson" />
+        <label>Current Grade</label>
+        <select id="s${i}-grade">
+          <option value="">Select grade...</option>
+          <option>Grade 5</option><option>Grade 6</option><option>Grade 7</option><option>Grade 8</option>
+        </select>
+      </div>`;
+  }
 
-        function deleteContact(index) {
-            if (confirm('Delete this contact message?')) {
-                contactsData.splice(index, 1);
-                saveData();
-                loadAdminData();
-            }
-        }
+  el.innerHTML = `
+    <div class="checkout-layout">
+      <div>
+        <div style="font-weight:700;font-size:1.15rem;margin-bottom:8px">Student Details</div>
+        <p style="color:var(--muted);font-size:0.88rem;margin-bottom:20px">Fill in details for each student enrolling.</p>
+        ${studentForms}
 
-        function deleteReview(index) {
-            if (confirm('Delete this review?')) {
-                reviewsData.splice(index, 1);
-                saveData();
-                loadReviews();
-                loadAdminData();
-            }
-        }
+        <div style="font-weight:700;font-size:1.15rem;margin-bottom:8px;margin-top:8px">Parent / Guardian Details</div>
+        <p style="color:var(--muted);font-size:0.88rem;margin-bottom:20px">We'll add you to our WhatsApp group to coordinate class times.</p>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:28px">
+          <label>Parent / Guardian Full Name</label>
+          <input type="text" id="p-name" placeholder="Jane Johnson" />
+          <label>Email Address</label>
+          <input type="email" id="p-email" placeholder="jane@example.com" />
+          <label>WhatsApp Phone Number <span style="color:var(--accent3);font-size:0.8rem">(for class scheduling group)</span></label>
+          <input type="tel" id="p-phone" placeholder="+1 (555) 000-0000" />
+        </div>
+      </div>
+      <div>
+        <div class="checkout-box">
+          <div class="checkout-box-title">Order Summary</div>
+          <div class="checkout-summary">
+            ${cart.map(c=>`
+            <div class="checkout-row">
+              <span>${c.icon} ${c.title}</span>
+              <span style="font-family:var(--mono);font-weight:600">$${c.price} × ${studentCount}</span>
+            </div>`).join('')}
+            <div class="checkout-row" style="color:var(--muted);font-size:0.85rem"><span>Students</span><span>${studentCount}</span></div>
+            <div class="checkout-row" style="color:var(--muted);font-size:0.85rem"><span>Start Date</span><span>Late July / Aug 2026</span></div>
+            <div class="checkout-row total"><span>Total</span><span style="font-family:var(--mono);color:var(--accent)">$${total}</span></div>
+          </div>
+          <div class="checkout-note">
+            💬 You'll be added to our <strong>WhatsApp group</strong> to choose class times after enrollment.<br/><br/>
+            ⚠️ <strong style="color:#fca5a5">Non-refundable</strong> — all sales are final.
+          </div>
+          <button class="paypal-btn" onclick="doCheckout(${total}, '${itemName.replace(/'/g,"\\'")}')">
+            Pay with <span class="paypal-logo">PayPal</span>
+          </button>
+          <div class="paypal-sub">Secure checkout via PayPal · $${total} total</div>
+        </div>
+      </div>
+    </div>`;
+}
 
-        function approveReview(index) {
-            reviewsData[index].approved = true;
-            saveData();
-            loadReviews();
-            loadAdminData();
-        }
+window.doCheckout = async function(total, itemName) {
+  // Validate parent info
+  const pName = document.getElementById('p-name').value.trim();
+  const pEmail = document.getElementById('p-email').value.trim();
+  const pPhone = document.getElementById('p-phone').value.trim();
+  if (!pName || !pEmail || !pPhone) {
+    alert("Please fill out all parent/guardian fields."); return;
+  }
 
-        // Page navigation
-        function showPage(pageId) {
-            const pages = document.querySelectorAll('.page');
-            pages.forEach(page => page.classList.remove('active'));
-            document.getElementById(pageId).classList.add('active');
-            window.scrollTo(0, 0);
-            trackVisit(pageId);
-        }
+  // Validate each student
+  let studentsInfo = [];
+  for (let i = 1; i <= studentCount; i++) {
+    const sName = document.getElementById('s'+i+'-name').value.trim();
+    const sGrade = document.getElementById('s'+i+'-grade').value;
+    if (!sName || !sGrade) {
+      alert('Please fill out all details for Student ' + i + '.'); return;
+    }
+    studentsInfo.push({ name: sName, grade: sGrade });
+  }
 
-        function showAdminTab(tabId) {
-            const tabs = document.querySelectorAll('.admin-tab');
-            const contents = document.querySelectorAll('.admin-content');
-            
-            tabs.forEach(tab => tab.classList.remove('active'));
-            contents.forEach(content => content.classList.remove('active'));
-            
-            event.target.classList.add('active');
-            document.getElementById(tabId).classList.add('active');
-        }
+  // Build email message for Web3Forms
+  const studentsText = studentsInfo.map((s,i) => `Student ${i+1}: ${s.name} — ${s.grade}`).join('\n');
+  const coursesText = cart.map(c => `• ${c.title} ($${c.price} × ${studentCount} = $${c.price*studentCount})`).join('\n');
+  const emailBody = `
+NEW CODECRAFT ENROLLMENT
+========================
+PARENT/GUARDIAN
+Name: ${pName}
+Email: ${pEmail}
+WhatsApp: ${pPhone}
 
-        // Review Form Handler
-        document.getElementById('reviewForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const review = {
-                id: Date.now(),
-                name: document.getElementById('reviewName').value,
-                course: document.getElementById('reviewCourse').value,
-                rating: parseInt(document.getElementById('reviewRating').value),
-                text: document.getElementById('reviewText').value,
-                date: new Date().toLocaleDateString(),
-                approved: false,
-                featured: false
-            };
+STUDENTS ENROLLING (${studentCount})
+${studentsText}
 
-            reviewsData.push(review);
-            saveData();
+COURSES
+${coursesText}
 
-            document.getElementById('reviewSuccess').classList.add('show');
-            document.getElementById('reviewForm').reset();
-            
-            setTimeout(() => {
-                document.getElementById('reviewSuccess').classList.remove('show');
-            }, 5000);
-        });
+TOTAL PAID: $${total}
+Start Date: Late July / August 2026
+Schedule: To be confirmed via WhatsApp group
+========================
+  `.trim();
 
-        // Admin Review Form Handler
-        document.getElementById('adminReviewForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const review = {
-                id: Date.now(),
-                name: document.getElementById('adminReviewName').value,
-                course: document.getElementById('adminReviewCourse').value,
-                rating: parseInt(document.getElementById('adminReviewRating').value),
-                text: document.getElementById('adminReviewText').value,
-                date: new Date().toLocaleDateString(),
-                approved: true,
-                featured: document.getElementById('adminReviewFeatured').checked
-            };
+  // Send enrollment email via Web3Forms
+  try {
+    const fd = new FormData();
+    fd.append('access_key', WEB3FORMS_KEY);
+    fd.append('subject', 'CodeCraft Enrollment — ' + pName + ' (' + studentCount + ' student' + (studentCount>1?'s':'') + ')');
+    fd.append('name', pName);
+    fd.append('email', pEmail);
+    fd.append('message', emailBody);
+    await fetch('https://api.web3forms.com/submit', { method:'POST', body: fd });
+  } catch(e) { console.warn("Web3Forms email error:", e); }
 
-            reviewsData.push(review);
-            saveData();
-            loadReviews();
-            loadAdminData();
+  // Submit PayPal form
+  const form = document.createElement('form');
+  form.method = 'POST';
+  form.action = 'https://www.paypal.com/cgi-bin/webscr';
+  form.target = '_blank';
+  const fields = {
+    cmd: '_xclick', business: PAYPAL_EMAIL,
+    item_name: 'CodeCraft — ' + itemName + ' (' + studentCount + ' student' + (studentCount>1?'s':'') + ')',
+    amount: total.toFixed(2), currency_code: 'USD',
+    no_shipping: '1', no_note: '1',
+    custom: 'Parent:' + pName + '|Email:' + pEmail + '|WA:' + pPhone,
+    return: window.location.href, cancel_return: window.location.href
+  };
+  for (const [k,v] of Object.entries(fields)) {
+    const inp = document.createElement('input');
+    inp.type='hidden'; inp.name=k; inp.value=v;
+    form.appendChild(inp);
+  }
+  document.body.appendChild(form);
+  form.submit();
+  document.body.removeChild(form);
 
-            alert('Testimonial added successfully!');
-            document.getElementById('adminReviewForm').reset();
-        });
+  setTimeout(() => {
+    const el = document.getElementById('checkout-content');
+    if (el) el.innerHTML = `
+      <div class="success-box">
+        <div class="success-icon">🎉</div>
+        <h2>Enrollment Submitted!</h2>
+        <p>Your payment has been initiated via PayPal. We've received your enrollment details and will add <strong>${pName}</strong> to our WhatsApp group at <strong>${pPhone}</strong> to confirm class times.</p>
+        <p style="font-size:0.85rem">Classes start <strong style="color:var(--accent2)">Late July / August 2026</strong>.</p>
+        <button class="btn-primary" style="margin-top:20px" onclick="cart=[];studentCount=1;updateCartBadge();showPage('home')">Back to Home</button>
+      </div>`;
+    cart = []; studentCount = 1; updateCartBadge();
+  }, 800);
+};
 
-        // Sign Up Form Handler
-        document.getElementById('signupForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const formData = {
-                name: document.getElementById('name').value,
-                email: document.getElementById('email').value,
-                phone: document.getElementById('phone').value,
-                age: document.getElementById('age').value,
-                course: document.getElementById('course').value,
-                experience: document.getElementById('experience').value,
-                message: document.getElementById('message').value,
-                date: new Date().toLocaleDateString()
-            };
+// ============================================================
+// ADMIN — with approval, add, delete, visits
+// ============================================================
+document.getElementById('admin-trigger').addEventListener('click', () => {
+  adminClickCount++;
+  clearTimeout(adminClickTimer);
+  adminClickTimer = setTimeout(() => { adminClickCount = 0; }, 2000);
+  if (adminClickCount >= 3) { adminClickCount = 0; document.getElementById('admin-modal-overlay').classList.add('open'); }
+});
 
-            signupsData.push(formData);
-            saveData();
+window.closeAdminModal = function(e) { if (e.target===document.getElementById('admin-modal-overlay')) document.getElementById('admin-modal-overlay').classList.remove('open'); };
+window.closeAdminPanel = function(e) { if (e.target===document.getElementById('admin-panel-overlay')) document.getElementById('admin-panel-overlay').classList.remove('open'); };
 
-            // Send email via Web3Forms
-            const web3FormData = new FormData();
-            web3FormData.append('access_key', 'f14b5772-9f9b-462e-97c7-5d23304f4abf');
-            web3FormData.append('subject', `New Interest Form: ${formData.name}`);
-            web3FormData.append('from_name', 'CodeCraft Camp Website');
-            web3FormData.append('name', formData.name);
-            web3FormData.append('email', formData.email);
-            web3FormData.append('phone', formData.phone || 'Not provided');
-            web3FormData.append('message', `
-Student Interest Form Submission
+window.switchAdminTab = function(tab) {
+  document.querySelectorAll('.admin-tab').forEach((t,i) => {
+    const tabs = ['pending','approved','add','visits'];
+    t.classList.toggle('active', tabs[i] === tab);
+  });
+  document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.remove('active'));
+  document.getElementById('admin-tab-' + tab).classList.add('active');
+  if (tab === 'visits') renderVisitsTable();
+};
 
-Name: ${formData.name}
-Email: ${formData.email}
-Phone: ${formData.phone || 'Not provided'}
-Age: ${formData.age}
-Course Interest: ${formData.course}
-Coding Experience: ${formData.experience}
-Additional Information: ${formData.message || 'None'}
-Date: ${formData.date}
-            `);
+window.adminRefresh = function() { adminLoadReviews(); };
 
-            try {
-                const response = await fetch('https://api.web3forms.com/submit', {
-                    method: 'POST',
-                    body: web3FormData
-                });
-                const result = await response.json();
-                
-                if (result.success) {
-                    document.getElementById('signupSuccess').classList.add('show');
-                    document.getElementById('signupForm').reset();
-                    
-                    setTimeout(() => {
-                        document.getElementById('signupSuccess').classList.remove('show');
-                    }, 5000);
-                } else {
-                    alert('There was an error submitting the form. Please try again.');
-                }
-            } catch (error) {
-                alert('There was an error submitting the form. Please try again.');
-                console.error('Error:', error);
-            }
-        });
+window.adminLogin = async function() {
+  const email = document.getElementById('admin-email').value;
+  const password = document.getElementById('admin-password').value;
+  const btn = document.getElementById('admin-login-btn');
+  const errEl = document.getElementById('admin-error');
+  errEl.style.display = 'none';
+  btn.textContent = 'Signing in...'; btn.disabled = true;
+  try {
+    const fb = await getFirebase();
+    if (!fb) throw new Error("Firebase could not load");
+    const cred = await fb.auth.signInWithEmailAndPassword(fb.auth.inst, email, password);
+    adminUser = cred.user;
+    document.getElementById('admin-modal-overlay').classList.remove('open');
+    document.getElementById('admin-panel-overlay').classList.add('open');
+    document.getElementById('admin-user-email').textContent = adminUser.email;
+    adminLoadReviews();
+  } catch(e) {
+    errEl.textContent = (e.code === 'auth/invalid-credential' || e.code === 'auth/wrong-password' || e.code === 'auth/user-not-found')
+      ? 'Invalid email or password.' : 'Error: ' + e.message;
+    errEl.style.display = 'block';
+  } finally { btn.textContent = 'Sign In'; btn.disabled = false; }
+};
 
-        // Contact Form Handler
-        document.getElementById('contactForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const formData = {
-                name: document.getElementById('contactName').value,
-                email: document.getElementById('contactEmail').value,
-                subject: document.getElementById('subject').value,
-                message: document.getElementById('contactMessage').value,
-                date: new Date().toLocaleDateString()
-            };
+window.adminLogout = async function() {
+  try { const fb = await getFirebase(); if (fb) await fb.auth.signOut(fb.auth.inst); } catch {}
+  adminUser = null;
+  document.getElementById('admin-panel-overlay').classList.remove('open');
+};
 
-            contactsData.push(formData);
-            saveData();
+async function adminLoadReviews() {
+  const pendingList = document.getElementById('admin-pending-list');
+  const approvedList = document.getElementById('admin-approved-list');
+  pendingList.innerHTML = '<div class="no-reviews-msg">Loading...</div>';
+  approvedList.innerHTML = '<div class="no-reviews-msg">Loading...</div>';
+  try {
+    const fb = await getFirebase();
+    if (!fb) throw new Error("Firebase unavailable");
+    const { db } = fb;
+    const snap = await db.getDocs(db.query(db.collection(db.inst, "reviews"), db.orderBy("createdAt","desc")));
+    const allR = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    const pending = allR.filter(r => !r.approved);
+    const approved = allR.filter(r => r.approved);
 
-            // Send email via Web3Forms
-            const web3FormData = new FormData();
-            web3FormData.append('access_key', 'f14b5772-9f9b-462e-97c7-5d23304f4abf');
-            web3FormData.append('subject', `Contact Form: ${formData.subject}`);
-            web3FormData.append('from_name', 'CodeCraft Camp Website');
-            web3FormData.append('name', formData.name);
-            web3FormData.append('email', formData.email);
-            web3FormData.append('message', `
-Contact Form Message
+    document.getElementById('stat-approved').textContent = approved.length;
+    document.getElementById('stat-pending').textContent = pending.length;
+    const avg = approved.length > 0 ? (approved.reduce((s,r)=>s+(r.stars||5),0)/approved.length).toFixed(1) : '—';
+    document.getElementById('stat-avg').textContent = avg;
 
-From: ${formData.name}
-Email: ${formData.email}
-Subject: ${formData.subject}
+    // Pending list
+    if (pending.length === 0) {
+      pendingList.innerHTML = '<div class="no-reviews-msg">No pending reviews 🎉</div>';
+    } else {
+      pendingList.innerHTML = pending.map(r => `
+        <div class="admin-review-card">
+          <div class="admin-review-row">
+            <strong>${r.name} <span class="pending-badge">PENDING</span></strong>
+            <span style="color:#fbbf24">${'★'.repeat(r.stars||5)}</span>
+          </div>
+          <div class="admin-review-text">${r.text}</div>
+          <div class="admin-review-course">Course: ${r.course}</div>
+          <div class="admin-review-actions">
+            <button class="btn-approve" onclick="adminApproveReview('${r.id}')">✓ Approve</button>
+            <button class="btn-danger" onclick="adminDeleteReview('${r.id}')">✕ Delete</button>
+          </div>
+        </div>`).join('');
+    }
 
-Message:
-${formData.message}
+    // Approved list
+    if (approved.length === 0) {
+      approvedList.innerHTML = '<div class="no-reviews-msg">No approved reviews yet.</div>';
+    } else {
+      approvedList.innerHTML = approved.map(r => `
+        <div class="admin-review-card">
+          <div class="admin-review-row">
+            <strong>${r.name} <span class="approved-badge">LIVE</span></strong>
+            <span style="color:#fbbf24">${'★'.repeat(r.stars||5)}</span>
+          </div>
+          <div class="admin-review-text">${r.text}</div>
+          <div class="admin-review-course">Course: ${r.course}</div>
+          <div class="admin-review-actions">
+            <button class="btn-danger" onclick="adminDeleteReview('${r.id}')">✕ Remove</button>
+          </div>
+        </div>`).join('');
+    }
+  } catch(e) {
+    pendingList.innerHTML = `<div class="no-reviews-msg">Error: ${e.message}</div>`;
+    approvedList.innerHTML = '';
+  }
+}
 
-Date: ${formData.date}
-            `);
+window.adminApproveReview = async function(id) {
+  try {
+    const fb = await getFirebase();
+    if (!fb) return;
+    const { db } = fb;
+    await db.updateDoc(db.doc(db.inst, "reviews", id), { approved: true });
+    reviewsLoaded = false; // reset public cache
+    adminLoadReviews();
+  } catch(e) { alert("Error approving: " + e.message); }
+};
 
-            try {
-                const response = await fetch('https://api.web3forms.com/submit', {
-                    method: 'POST',
-                    body: web3FormData
-                });
-                const result = await response.json();
-                
-                if (result.success) {
-                    document.getElementById('contactSuccess').classList.add('show');
-                    document.getElementById('contactForm').reset();
-                    
-                    setTimeout(() => {
-                        document.getElementById('contactSuccess').classList.remove('show');
-                    }, 5000);
-                } else {
-                    alert('There was an error submitting the form. Please try again.');
-                }
-            } catch (error) {
-                alert('There was an error submitting the form. Please try again.');
-                console.error('Error:', error);
-            }
-        });
+window.adminDeleteReview = async function(id) {
+  if (!confirm("Delete this review? This cannot be undone.")) return;
+  try {
+    const fb = await getFirebase();
+    if (!fb) return;
+    const { db } = fb;
+    await db.deleteDoc(db.doc(db.inst, "reviews", id));
+    reviewsLoaded = false;
+    adminLoadReviews();
+  } catch(e) { alert("Error deleting: " + e.message); }
+};
 
-        // Initialize
-        initData();
-        trackVisit('home');
-    </script>
+// Admin add review stars
+const arStars = document.getElementById('ar-stars');
+arStars.querySelectorAll('span').forEach(s => {
+  s.addEventListener('click', () => { adminSelectedStars = parseInt(s.dataset.val); hlStars(arStars, adminSelectedStars); });
+  s.addEventListener('mouseenter', () => hlStars(arStars, parseInt(s.dataset.val)));
+  s.addEventListener('mouseleave', () => hlStars(arStars, adminSelectedStars));
+});
+hlStars(arStars, adminSelectedStars);
+
+window.adminAddReview = async function() {
+  const name = document.getElementById('ar-name').value.trim();
+  const text = document.getElementById('ar-text').value.trim();
+  const course = document.getElementById('ar-course').value;
+  if (!name || !text) { alert("Please fill in name and review text."); return; }
+  const btn = document.querySelector('#admin-tab-add .btn-submit');
+  btn.disabled = true; btn.textContent = 'Adding...';
+  try {
+    const fb = await getFirebase();
+    if (!fb) throw new Error("Firebase unavailable");
+    const { db } = fb;
+    await db.addDoc(db.collection(db.inst, "reviews"), {
+      name, text, stars: adminSelectedStars, course,
+      approved: true,
+      createdAt: db.serverTimestamp()
+    });
+    document.getElementById('ar-name').value = '';
+    document.getElementById('ar-text').value = '';
+    adminSelectedStars = 5; hlStars(arStars, 5);
+    reviewsLoaded = false;
+    adminLoadReviews();
+    switchAdminTab('approved');
+    alert("Review added and published!");
+  } catch(e) { alert("Error: " + e.message); }
+  finally { btn.disabled = false; btn.textContent = 'Add Review (Auto-Approved)'; }
+};
+
+function renderVisitsTable() {
+  const visits = getVisits();
+  const maxCount = Math.max(...visits.map(v => v.count), 1);
+  const total = visits.reduce((s,v) => s+v.count, 0);
+  document.getElementById('stat-visits').textContent = total;
+  document.getElementById('admin-visits-table').innerHTML = `
+    <table class="visit-table">
+      <thead><tr><th>Page</th><th>Views</th><th>Visual</th></tr></thead>
+      <tbody>
+        ${visits.map(v => `
+        <tr>
+          <td style="font-weight:600;text-transform:capitalize">${v.page}</td>
+          <td style="font-family:var(--mono);font-weight:700;color:var(--accent)">${v.count}</td>
+          <td>
+            <div class="visit-bar-wrap">
+              <div class="visit-bar" style="width:${Math.round((v.count/maxCount)*100)}%"></div>
+            </div>
+          </td>
+        </tr>`).join('')}
+        <tr>
+          <td style="font-weight:700">Total</td>
+          <td style="font-family:var(--mono);font-weight:900;color:var(--accent3)">${total}</td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
+    <p style="color:var(--muted);font-size:0.78rem;margin-top:12px;">* Visits tracked per browser session via localStorage.</p>`;
+}
+
+window.COURSES = COURSES;
+window.updateCartBadge = updateCartBadge;
+updateCartBadge();
+trackVisit('home');
+</script>
 </body>
 </html>
